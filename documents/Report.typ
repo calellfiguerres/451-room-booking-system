@@ -324,7 +324,189 @@
 
 = Database Design
 == ER Diagram
-#lorem(100)
+#figure(
+  image("images/451 proj er diagram revised.png"),
+  caption: [ER Diagram describing the main entities in our project and the relationship each entity has with the others it interacts with.]
+)
+
+== Conversion Process
+To convert our ER diagram into relational tables, we need to translate the entities and relationships: entities become tables, attributes become columns, primary keys and constraints are created to enforce the schema, and foreign keys are created to link relationships between entities.
+
+The conversion process will vary based on different cardinalities for relationships:
+- One-to-one: the foreign key can be placed in either of the tables.
+- One-to-many / many-to-one: the foreign key should be placed in the table on the many side of the relationship, to avoid needing to create another table.
+- Many-to-many: you need to create a new table to store the relationship, since both sides of the relationship could have many connections and thus need to reference an unbounded amount of foreign keys. Instead, the foreign key of the new table will point to the primary keys of the entities involved in the relationship.
 
 == Tables (from ER Diagram)
-#lorem(100)
+=== Admin
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`ID`], [string], [Primary Key], [The admin's unique ID],
+  [`firstName`], [string], [Not Null], [the first name of the admin],
+  [`lastName`], [string], [Not Null], [the last name of the admin]
+)
+
+=== Student
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`ID`], [string], [Primary Key], [The student's unique ID],
+  [`roomID`], [string], [Foreign Key], [the room the student is staying in],
+  [`firstName`], [string], [Not Null], [the first name of the student],
+  [`lastName`], [string], [Not Null], [the last name of the student]
+)
+
+=== Room
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`ID`], [string], [Primary Key], [The room's unique ID],
+  [`name`], [string], [Not Null], [The name of the room],
+  [`description`], [string], [Not Null], [A description of the room],
+  [`location`], [string], [Not Null], [The location of the room]
+)
+
+=== Room Request
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`requestID`], [int], [Primary Key], [A unique ID for the request],
+  [`studentID`], [string], [Foreign Key], [The ID of the student making the request],
+  [`roomID`], [string], [Foreign Key], [The ID of the room being requested],
+  [`openDate`], [Date], [Not Null], [The date when the request was created],
+  [`closeDate`], [Date], [], [The date when the request was closed]
+)
+
+=== Maintenance Request
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`requestID`], [int], [Primary Key], [A unique ID for the request],
+  [`studentID`], [string], [Foreign Key], [The ID of the student making the request],
+  [`roomID`], [string], [Foreign Key], [The ID of the room being requested],
+  [`description`], [string], [Not Null], [A description of the problem],
+  [`openDate`], [Date], [Not Null], [The date when the request was created],
+  [`closeDate`], [Date], [], [The date when the request was closed]
+)
+
+=== Roommate Request
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`requestID`], [int], [Primary Key], [A unique ID for the request],
+  [`requesterID`], [string], [Foreign Key], [The ID of the person making the request],
+  [`requesteeID`], [string], [Foreign Key], [The ID of the person being requested as a roommate],
+  [`message`], [string], [], [An explanation of why they want to be roommates],
+  [`sendDate`], [Date], [Not Null], [The date when the request was sent]
+)
+
+=== Admin Room Request Management
+#table(
+  columns: (20%, 20%, 20%, 40%),
+  [*Attribute*], [*Type*], [*Constraints*], [*Description*],
+  [`managementID`], [string], [Primary Key], [A unique ID for the management transaction],
+  [`adminID`], [string], [Foreign Key], [The admin who's managing a room request],
+  [`requestID`], [string], [Foreign Key], [The room request being managed]
+)
+
+== Relationships
+=== Student lives in Room (M:1)
+Many students can live in one room.
+
+We model this by creating a foreign key `roomID` in the student table to store the room they are in.
+
+=== Student makes Room Requests (1:M)
+One student can make many room requests, but a room request belongs to one student. 
+
+Put a foreign key `studentID` in the room request table to point toward the student who made the request.
+
+=== Room Requests request a room (M:1)
+One room request points towards one room, but a room can have many room requests at any given time.
+
+Best option is to put a `roomID` foreign key in the room requests table to point towards the room being requested.
+
+=== Student makes Maintenance Requests (M:M)
+A student can make many maintenance requests, but each maintenance request belongs to one student.
+
+To handle this, we'll add a `studentID` in the maintenance requests table for the student that made the request.
+
+=== Maintenance Requests requests maintenance for a Room (M:1)
+A maintenance request points to one room, but a room can have many maintenance requests at a given time.
+
+To model this, we put the foreign key `roomID` into maintenance request table, pointing at the room it is requesting.
+
+=== Admin manages Room Request (M:M)
+One admin can manage many room requests, and one room request can be managed by many admin.
+
+To handle this, we must create a separate table for the relationship (Admin Room Request Management). This table will store a management relationship instance, an `adminID` and a `requestID` as foreign keys to point to the admin doing the managing and the request being managed.
+
+=== Student makes/manages Roommate Requests (M:1)
+A student can make many roommate requests, but a request is only made by one student.
+
+We need to put a foreign key for the student requesting the roommate and the student getting requested as foreign keys in the roommate request table to reference the students table.
+
+== Table Creation Commands
+```sql
+CREATE TABLE Admin (
+    ID VARCHAR(255) PRIMARY KEY,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE Student (
+    ID VARCHAR(255) PRIMARY KEY,
+    roomID VARCHAR(255) REFERENCES Room(ID),
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL,
+);
+
+
+CREATE TABLE Room (
+    ID VARCHAR(255) PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    Location VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE RoomRequest (
+    requestID INT PRIMARY KEY,
+    studentID VARCHAR(255) REFERENCES Student(ID),
+    roomID VARCHAR(255) REFERENCES Room(ID),
+    openDate DATE NOT NULL,
+    closeDate DATE NOT NULL
+);
+
+
+CREATE TABLE MaintenanceRequest (
+    requestID INT PRIMARY KEY,
+    studentID VARCHAR(255) REFERENCES Student(ID),
+    roomId VARCHAR(255) REFERENCES Room(ID),
+    description TEXT,
+    openDate DATE NOT NULL,
+    closeDate DATE NOT NULL
+);
+
+
+CREATE TABLE RoommateRequest (
+    requestID INT PRIMARY KEY,
+    requesterId VARCHAR(255) REFERENCES Student(ID),
+    requesteeID VARCHAR(255) REFERENCES Student(ID),
+    Message TEXT,
+    sendDate DATE NOT NULL
+);
+
+
+CREATE TABLE AdminRoomRequestManagement (
+    managementID VARCHAR(255) PRIMARY KEY,
+    adminID VARCHAR(255) REFERENCES Admin(ID),
+    requestID INT REFERENCES RoomRequest(requestID)
+);
+```
+
+== Redundancy Elimination and Data Normalization
+Each column contains only one value. We created separate tables to represent many to many relationships, so that we never have to store many values within one column. This is vital for accessing and modifying the data within the tables.
+
+Each table only contains data relevant to the entity or relationship the table is based on (aka the primary key). We don't have information about other entities or relationships within the table, and instead we only reference that information through foreign keys. A byproduct of this is that no data field is repeated anywhere in the schema and thus we only have one single source of truth for all data, ensuring data consistency and helping with data integrity.
