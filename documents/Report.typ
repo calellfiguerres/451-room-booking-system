@@ -125,33 +125,43 @@
   // White Spring Ranch
   // #image("images/WSR.png")
 
-  #v(1in)
+  #v(0.5in)
 
   // Ryan Biggs \
   // Calell Figuerres \ 
   // Dillon Kamin \
   // Alexander Larsen
   
-  Grace Anderson \
-  Leo Curdi \
-  Josh Evans \
-  Calell Figuerres \
-  Aaron Howe
-
-  #v(1in)
-
-  // Parteek Kumar \
-  // CptS 451 \
+  #table(
+    columns: (1.5in, 1in),
+    stroke: none,
+    [Grace Anderson], [11759304],
+    [Leo Curdi], [11704166],
+    [Josh Evans], [11802879],
+    [Calell Figuerres], [11776119],
+    [Aaron Howe], [11635434] 
+  )
   
-  // #v(0.5in)
+  // Grace Anderson (11759304) \
+  // Leo Curdi (11704166) \
+  // Josh Evans (11802879) \
+  // Calell Figuerres (11776119) \
+  // Aaron Howe (11635434)
+
+  #v(0.75in)
 
   #strong[#datetime.today().display("[month repr:long] [day], [year]")]
+ 
+  #v(0.75in)
+
+  CptS 451 - Introduction to Database Systems \
+  Parteek Kumar \
 ]
 
 #pagebreak()
 
 #heading(outlined: false, numbering: none)[Abstract]
-#lorem(100)
+Dormitory reservation software causes adverse effects on student bodies in higher education when lacking an efficient database management system. Many universities are seeing either a rising student enrollment, or seeing severe drops in enrollment, and either situation can be difficult to manage without a well-implemented, automated database. Our database management system follows a design structure that allows students to intuitively complete and submit applications for room reservations and gives administrative entities a system that's simple enough to easily navigate, and complex enough to have authoritative control. Our fullstack utilizes TypeScript for type safety and sound communication between the frontend and backend frameworks, React on the client-side, Express.js API with tRPC, and PostreSQL for databasement management. Our goal is to cut reservation assignment and processing time by at least half of what is currently shown by real-world data, and reduce conflict-causing errors such as double-reservations.
 
 #pagebreak()
 
@@ -162,12 +172,12 @@
   indent: auto
 )
 
-
-
 #pagebreak()
 
 = Introduction
-#lorem(100)
+Managing room bookings in student dorms can be a difficult, complex, and time consuming process. Our booking system for student dorms aims to streamline this process by giving an efficient, user friendly, and automated solution.  The system allows students to do all the tasks they need to do that are related with finding, scheduling and booking dorms all on the same platform.  The system also allows for admins to oversee all actions being made by students,
+
+Our system is designed to enhance accessibility, reduce admin workload and improve the experience for students.  With many features like real time updates, automatic notifications, tracking, and more we are able to ensure a seamless booking process while maintaining the necessary regulations. This report details the design, development and implementations of our room booking system.  It will cover the functional and non-functional requirements, structure, and key feature that make is an effective solution. 
 
 #pagebreak()
 
@@ -337,6 +347,8 @@ The conversion process will vary based on different cardinalities for relationsh
 - One-to-many / many-to-one: the foreign key should be placed in the table on the many side of the relationship, to avoid needing to create another table.
 - Many-to-many: you need to create a new table to store the relationship, since both sides of the relationship could have many connections and thus need to reference an unbounded amount of foreign keys. Instead, the foreign key of the new table will point to the primary keys of the entities involved in the relationship.
 
+#pagebreak()
+
 == Tables (from ER Diagram)
 === Admin
 #table(
@@ -410,6 +422,8 @@ The conversion process will vary based on different cardinalities for relationsh
   [`requestID`], [string], [Foreign Key], [The room request being managed]
 )
 
+#pagebreak()
+
 == Relationships
 === Student lives in Room (M:1)
 Many students can live in one room.
@@ -445,6 +459,8 @@ To handle this, we must create a separate table for the relationship (Admin Room
 A student can make many roommate requests, but a request is only made by one student.
 
 We need to put a foreign key for the student requesting the roommate and the student getting requested as foreign keys in the roommate request table to reference the students table.
+
+#pagebreak()
 
 == Table Creation Commands
 ```sql
