@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx --watch index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "tsc": "^2.0.4",
+    "tsx": "^4.19.3"
+  },
+  "dependencies": {
+    "@trpc/server": "^11.0.0-rc.824",
+    "express": "^4.21.2",
+    "superjson": "^2.2.2",
+    "zod": "^3.24.2"
+  }
+}
