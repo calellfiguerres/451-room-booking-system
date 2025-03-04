@@ -1,7 +1,14 @@
+import { api } from "~/.client/Providers/trpc";
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
+import { useEffect } from "react";
 
 export function Welcome() {
+
+  useEffect(() => {
+    api.admin.hello.query().then((res) => console.log(res));
+  }, []);
+
   return (
     <main className="flex items-center justify-center pt-16 pb-4">
       <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
