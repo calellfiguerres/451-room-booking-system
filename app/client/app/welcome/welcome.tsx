@@ -7,6 +7,7 @@ export function Welcome() {
 
   useEffect(() => {
     api.admin.hello.query().then((res) => console.log(res));
+    api.admin.getUsers.query().then((res) => console.log(res));
   }, []);
 
   return (
