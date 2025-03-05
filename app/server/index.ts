@@ -10,6 +10,6 @@ app.use("/api", createExpressMiddleware({
     createContext
 }));
 
-app.listen(8000, () => {
-    console.log("Listening on http://localhost:8000");
+app.listen(8001, () => {
+    console.log("Listening on http://localhost:8001");
 });
