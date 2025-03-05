@@ -1,5 +1,5 @@
 import { publicProcedure, router } from "./trpc";
-import db, {pgp} from "../database";
+import db, {pgp} from "./database";
 
 export const adminProcedures = router({
     hello: publicProcedure.query(async (opts) => {
