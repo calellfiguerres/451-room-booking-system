@@ -10,7 +10,6 @@
 Setup the PGAdmin database
 - create a .env in app/server
 - put into the .env file:
-    PORT=3007 # random port
 
     # Connection information to PostgreSQL
     DB_HOST=localhost
