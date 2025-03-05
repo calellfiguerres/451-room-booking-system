@@ -15,7 +15,7 @@ CREATE TABLE if not exists Room (
 
 CREATE TABLE if not exists Student (
     ID VARCHAR(255) PRIMARY KEY,
-    roomID VARCHAR(255) REFERENCES Room(ID),
+    roomID VARCHAR(255) REFERENCES Room(ID) null,
     firstName VARCHAR(255) NOT NULL,
     lastName VARCHAR(255) NOT NULL
 );
