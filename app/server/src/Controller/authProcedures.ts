@@ -3,7 +3,7 @@ import { Session } from "../Models/Session";
 import z from "zod";
 import { Admin } from "../Models/Admin";
 import { Student } from "../Models/Student";
-import { publicProcedure, router } from "./trpc";
+import { authenticatedProcedure, publicProcedure, router } from "./trpc";
 import { protectedCall } from "./utilities";
 
 export const authProcedures = router({
@@ -44,6 +44,20 @@ export const authProcedures = router({
         });
 
         return true;
+    }),
+    logout: authenticatedProcedure.mutation(async (opts) => {
+        const { ctx } = opts;
+        const { res } = ctx;
+    
+        const response = await protectedCall(async () => {
+            Session.delete(ctx.session.id);
+        });
+
+        res.clearCookie("session-token");
+
+        return {
+            success: response.result
+        };
     }),
     signup: publicProcedure.input(z.object({
         firstname: z.string().nonempty(),

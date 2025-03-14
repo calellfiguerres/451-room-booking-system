@@ -77,4 +77,8 @@ export class Session {
             throw new Error("Invalid Session Type");
         }
     }
+
+    public static async delete(sessionId: string) {
+        await db.connection.none(`DELETE FROM session WHERE id = $1`, [sessionId]);
+    }
 }
