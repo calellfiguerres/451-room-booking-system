@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import db from "./database";
 
 export class Admin {
@@ -33,8 +34,35 @@ export class Admin {
     public static async getByUsername(username: string) {
         const response = await db.connection.one("SELECT * FROM admin WHERE username = $1", [username]);
         const result = new Admin(
-            response.id, response.usernae, response.password, response.firstname, response.lastname
+            response.id, response.username, response.password, response.firstname, response.lastname
         );
         return result;
+    }
+
+    public static async add(admin: Admin): Promise<Admin>;
+    public static async add(username: string, password: string, firstname: string, lastname: string): Promise<Admin>;
+    public static async add(arg1: Admin | string, password?: string, firstname?: string, lastname?: string): Promise<Admin> {
+        const id = randomUUID();
+        if (arg1 instanceof Admin) {
+            const admin = arg1;
+            await db.connection.none(
+                `INSERT INTO admin (id, username, password, firstname, lastname)
+                VALUES ($1, $2, $3, $4, $5)`,
+                [id, admin.username, admin.password, admin.firstname, admin.lastname]
+            );
+            return admin;
+        } else if (arg1 && password && firstname && lastname) {
+            const username = arg1;
+            await db.connection.none(
+                `INSERT INTO admin (id, username, password, firstname, lastname)
+                VALUES ($1, $2, $3, $4, $5)`,
+                [id, username, password, firstname, lastname]
+            );
+            return new Admin(
+                id, username, password, firstname, lastname
+            );
+        } else {
+            throw new Error("Invalid `Admin.add` arguments");
+        }
     }
 }

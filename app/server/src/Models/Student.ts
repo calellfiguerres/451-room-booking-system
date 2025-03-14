@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import db from "./database";
 
 export class Student {
@@ -7,7 +8,7 @@ export class Student {
         private password: string,
         public firstname: string,
         public lastname: string,
-        public roomid: string
+        public roomid?: string
     ) {}
 
     public checkPassword(input: string): boolean {
@@ -32,13 +33,37 @@ export class Student {
     }
 
     public static async getByUsername(username: string) {
-        console.log("before - student");
         const response = await db.connection.one("SELECT * FROM student WHERE username = $1", [username]);
-        console.log(`response: ${response}`);
-        console.log("after");
         const result = new Student(
             response.id, response.username, response.password, response.firstname, response.lastname, response.roomid
         );
         return result;
+    }
+
+    public static async add(student: Student): Promise<Student>;
+    public static async add(username: string, password: string, firstname: string, lastname: string): Promise<Student>;
+    public static async add(arg1: Student | string, password?: string, firstname?: string, lastname?: string): Promise<Student> {
+        const id = randomUUID();        
+        if (arg1 instanceof Student) {
+            const student = arg1;
+            await db.connection.none(
+                `INSERT INTO student (id, username, password, firstname, lastname)
+                VALUES ($1, $2, $3, $4, $5)`,
+                [id, student.username, student.password, student.firstname, student.lastname]
+            );
+            return student;
+        } else if (arg1 && password && firstname && lastname) {
+            const username = arg1;
+            await db.connection.none(
+                `INSERT INTO student (id, username, password, firstname, lastname)
+                VALUES ($1, $2, $3, $4, $5)`,
+                [id, username, password, firstname, lastname]
+            );
+            return new Student(
+                id, username, password, firstname, lastname
+            );
+        } else {
+            throw new Error("Invalid `Student.add` arguments");
+        }
     }
 }
