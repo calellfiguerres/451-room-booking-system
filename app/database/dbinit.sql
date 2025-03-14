@@ -1,10 +1,3 @@
-CREATE TABLE if not exists Admin (
-    ID VARCHAR(255) PRIMARY KEY,
-    firstName VARCHAR(255) NOT NULL,
-    lastName VARCHAR(255) NOT NULL
-);
-
-
 CREATE TABLE if not exists Room (
     ID VARCHAR(255) PRIMARY KEY,
     Name VARCHAR(255) NOT NULL,
@@ -12,6 +5,33 @@ CREATE TABLE if not exists Room (
     Location VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE if not exists Admin (
+    ID VARCHAR(255) PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE if not exists Student (
+    ID VARCHAR(255) PRIMARY KEY,
+    roomID VARCHAR(255) REFERENCES Room(ID),
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    firstName VARCHAR(255) NOT NULL,
+    lastName VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Session (
+    ID VARCHAR(255) PRIMARY KEY,
+    adminID VARCHAR(255) REFERENCES Admin(ID),
+    studentID VARCHAR(255) REFERENCES Student(ID),
+    CHECK (
+        (adminID IS NOT NULL AND studentID IS NULL)
+        OR
+        (adminID IS NULL AND studentID IS NOT NULL)
+    )
+);
 
 CREATE TABLE if not exists Student (
     ID VARCHAR(255) PRIMARY KEY,
