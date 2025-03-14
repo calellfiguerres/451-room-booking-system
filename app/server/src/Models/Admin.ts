@@ -19,7 +19,6 @@ export class Admin {
         const result = response.map((r) => new Admin(
             r.id, r.username, r.password, r.firstname, r.lastname
         ));
-        console.log(result);
         return result;
     }
 

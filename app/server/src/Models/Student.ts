@@ -20,7 +20,6 @@ export class Student {
         const result = response.map((r) => new Student(
             r.id, r.username, r.password, r.firstname, r.lastname, r.roomid
         ));
-        console.log(result);
         return result;
     }
 
