@@ -48,6 +48,33 @@ export const adminProcedures = router({
 
         return true;
     }),
+    signup: publicProcedure.input(z.object({
+        firstname: z.string().nonempty(),
+        lastname: z.string().nonempty(),
+        username: z.string().nonempty(),
+        password: z.string().nonempty(),
+        signupAsAdmin: z.boolean()
+    })).mutation(async (opts) => {
+        const { input } = opts;
+
+        if (input.signupAsAdmin) {
+            const createAdminCall = await protectedCall(async () => {
+                return await Admin.add(input.username, input.password, input.firstname, input.lastname);
+            });
+            if (!createAdminCall.success) {
+                throw new TRPCError({ code: "BAD_REQUEST", message: "Unable to create admin" });
+            }
+            return createAdminCall.result;
+        } else {
+            const createStudentCall = await protectedCall(async () => {
+                return await Student.add(input.username, input.password, input.firstname, input.lastname);
+            });
+            if (!createStudentCall.success) {
+                throw new TRPCError({ code: "BAD_REQUEST", message: "Unable to create student" });
+            }
+            return createStudentCall.result;
+        }
+    }),
     getAdmins: publicProcedure.query(async (opts) => {
         const result = Admin.getAll();
         console.log(result);
