@@ -22,7 +22,7 @@ export default function Signup() {
             setErrorMsg("");
         }
 
-        await api.admin.signup.mutate({
+        await api.auth.signup.mutate({
             firstname: firstName,
             lastname: lastName,
             username: username,

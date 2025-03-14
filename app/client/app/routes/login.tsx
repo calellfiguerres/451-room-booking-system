@@ -11,7 +11,7 @@ export default function login() {
 
     async function submitLogin() {
         try {
-            const res = await api.admin.login.query({
+            const res = await api.auth.login.query({
                 username: username,
                 password: password,
                 loginAsAdmin: loginAsAdmin
