@@ -1,6 +1,10 @@
 import pgPromise from 'pg-promise';
 
-const pgp = pgPromise();
+const pgp = pgPromise({
+    query: (e) => {
+        console.log(`Running Query: ${e.query}`);
+    }
+});
 const db = { connection: pgp({}) }
 
 console.log(process.env.DB_HOST, process.env.DB_PORT, process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD)
