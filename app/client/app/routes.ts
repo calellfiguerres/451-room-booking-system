@@ -6,4 +6,5 @@ export default [
     route("logout", "routes/logout.tsx"),
     route("signup", "routes/signup.tsx"),
     route("usersList", "routes/usersList.tsx"),
+    route("roomList", "routes/roomList.tsx"),
 ] satisfies RouteConfig;
