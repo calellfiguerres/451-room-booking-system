@@ -63,11 +63,11 @@ export default function roomlist() {
                 </p>
             </div>
 
-            <div className='max-w-[1240px] py-8 px-16 mx-auto '>                
+            <div className='max-w-[1240px] py-8 px-16 mx-auto '>
+                <p>Rooms</p>
                 <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
                     {rooms.map(a => (
                         <RoomDisplay
-                            
                             name={a.name}
                             description={a.description}
                             location={a.location}
