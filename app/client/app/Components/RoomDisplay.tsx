@@ -1,11 +1,10 @@
 import React from "react";
 
-const RoomDisplay: React.FC<{
-    id: string,
+const RoomDisplay: React.FC<{    
     name: string,
     description: string,
     location: string
-}> = ({ id, name, description, location }) => (
+}> = ({ name, description, location }) => (
     <div className={'break-inside-avoid rounded-md bg-white'}>
 
 

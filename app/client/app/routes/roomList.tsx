@@ -67,7 +67,7 @@ export default function roomlist() {
                 <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
                     {rooms.map(a => (
                         <RoomDisplay
-                            id={a.id}
+                            
                             name={a.name}
                             description={a.description}
                             location={a.location}
