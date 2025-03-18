@@ -35,30 +35,31 @@ export class Room {
         return result;
     }
 
-    public static async add(admin: Room): Promise<Room>;
-    public static async add(username: string, password: string, firstname: string, lastname: string): Promise<Room>;
-    public static async add(arg1: Room | string, password?: string, firstname?: string, lastname?: string): Promise<Room> {
+    public static async add(room: Room): Promise<Room>;
+    public static async add(name: string, description: string, location: string): Promise<Room>;
+    public static async add(arg1: Room | string, description?: string, location?: string): Promise<Room> {
         const id = randomUUID();
         if (arg1 instanceof Room) {
-            const admin = arg1;
+            const room = arg1;
             await db.connection.none(
-                `INSERT INTO admin (id, name)
-                VALUES ($1, $2)`,
-                [id, admin.name]
+                `INSERT INTO room (id, name, description, location)
+                VALUES ($1, $2, $3, $4)`,
+                [id, room.name, room.description, room.location]
             );
-            return admin;
-        } 
-        // else if (arg1 && password && firstname && lastname) {
-        //     const username = arg1;
-        //     await db.connection.none(
-        //         `INSERT INTO room (id, name)
-        //         VALUES ($1, $2)`,
-        //         [id, name]
-        //     );
-        //     return new Room(
-        //         id, name,
-        //     );
-        // } 
+            return room;
+        }else if (arg1 && description && location){
+            const name = arg1;
+
+            await db.connection.none(
+                `INSERT INTO room (id, name, description, location)
+                VALUES ($1, $2, $3, $4)`,
+                [id, name, description, location]
+            );
+            
+            return new Room(
+                id, name, description, location
+            );
+        }
         else {
             throw new Error("Invalid `Room.add` arguments");
         }

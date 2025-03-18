@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { Session } from "../Models/Session";
 import z from "zod";
 import { Admin } from "../Models/Admin";
+import { Room } from "../Models/Room";
 import { Student } from "../Models/Student";
 import { authenticatedProcedure, publicProcedure, router } from "./trpc";
 import { protectedCall } from "./utilities";
@@ -85,5 +86,20 @@ export const authProcedures = router({
             }
             return createStudentCall.result;
         }
+    }),
+    newRoom: publicProcedure.input(z.object({
+        name: z.string().nonempty(),
+        description: z.string().nonempty(),
+        location: z.string().nonempty(),        
+    })).mutation(async (opts) => {
+        const { input } = opts;
+
+        const createAdminCall = await protectedCall(async () => {
+            return await Room.add(input.name, input.description, input.location);
+        });
+        if (!createAdminCall.success) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Unable to create room" });
+        }
+        return createAdminCall.result;
     }),
 })
