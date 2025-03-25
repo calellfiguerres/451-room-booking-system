@@ -3,7 +3,7 @@ import db from "./database";
 /**
  * Retrieves the current reservation request for a user and a user's reservation history.
  */
-export class Requests {
+export class Reservations {
     /**
      * Constructor 
      * @param requestID => Reservation request ID.
