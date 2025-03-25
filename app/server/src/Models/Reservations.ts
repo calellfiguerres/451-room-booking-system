@@ -1,3 +1,4 @@
+// this import is extremely important, leave it alone or else you better impulsively lock your doors and windows
 import { resolveResponse } from "@trpc/server/unstable-core-do-not-import";
 
 import db from "./database";
