@@ -1,3 +1,5 @@
+import { resolveResponse } from "@trpc/server/unstable-core-do-not-import";
+
 import db from "./database";
 
 /**
@@ -6,18 +8,18 @@ import db from "./database";
 export class Reservations {
     /**
      * Constructor 
-     * @param requestID => Reservation request ID.
+     * @param reservationID => Reservation request ID.
      * @param studentID => Student ID.
      * @param roomID => Room ID on reservation.
-     * @param isOpen => When the window to apply opens/opened.
-     * @param isClosed => When the window to apply closes/closed.
+     * @param openDate => When the window to apply opens/opened.
+     * @param closeDate => When the window to apply closes/closed.
      */
     constructor(
-        public requestID: number,
+        public reservationID: number,
         public studentID: string,
         public roomID: string,
-        public isOpen: Date,
-        public isClosed: Date
+        public openDate: Date,
+        public closeDate: Date
     ) {}
 
     /**
@@ -26,7 +28,23 @@ export class Reservations {
      * @returns Reservation history.
      */
     public static async getReservationHistory(studentID: string) {
-        return 0;
+        const response = await db.connection.any(
+            `SELECT rr.*, r.name AS roomName, r.location AS roomLocation
+            FROM RoomRequest rr JOIN Room r ON rr.roomId = r.ID
+            WHERE rr.studentId = $1
+            ORDER BY rr.openDate DESC`, [studentID]
+        );
+        const result = response.map((r) => ({
+            reservationID: r.reservationid,
+            studentID: r.studentid,
+            roomID: r.roomid,
+            roomName: r.roomname,
+            location: r.location,
+            openDate: r.opendate,
+            closeDate: r.closedate,
+            isActive: new Date() >= r.dateOpen && new Date() <= r.dateClosed
+        }));
+        return result;
     }
 
     /**
