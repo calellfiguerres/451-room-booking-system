@@ -43,7 +43,7 @@ export class Reservations {
             location: r.location,
             openDate: r.opendate,
             closeDate: r.closedate,
-            isActive: new Date() >= r.dateOpen && new Date() <= r.dateClosed
+            isActive: new Date() >= r.opendate && new Date() <= r.closedate
         }));
         return result;
     }

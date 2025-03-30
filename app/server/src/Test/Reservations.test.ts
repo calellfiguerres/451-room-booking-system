@@ -61,7 +61,7 @@ describe("Reservations", () => {
     describe("getCurrentReservation", () => {
         it("Should return the student's current reservation.", async () => {
             const studentID = "Test_User";
-            const mockReservations = {
+            const mockCurrentReservation = {
                 reservationid: 1,
                 studentid: studentID,
                 roomid: "room-1",
@@ -70,7 +70,7 @@ describe("Reservations", () => {
                 opendate: new Date("2025-03-04"),
                 closedate: new Date("2025-08-01")
             };
-            (db.connection.oneOrNone as jest.Mock).mockResolvedValue(mockReservations);
+            (db.connection.oneOrNone as jest.Mock).mockResolvedValue(mockCurrentReservation);
             const result = await Reservations.getCurrentReservation(studentID);
             expect(db.connection.oneOrNone).toHaveBeenCalledWith(
                 expect.stringContaining("BETWEEN rr.opendate AND rr.closedate"),
