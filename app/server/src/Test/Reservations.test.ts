@@ -78,7 +78,7 @@ describe("Reservations", () => {
             );
             expect(result).not.toBeNull();
             expect(result).toHaveProperty("reservationID", 1);
-            expect(result).toHaveProperty("roomName", "Stephenson North");
+            expect(result).toHaveProperty("roomName", "Stephenson 311");
             expect(result).toHaveProperty("isActive", true);
         });
 

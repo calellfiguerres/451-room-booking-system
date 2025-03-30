@@ -53,9 +53,8 @@ describe("Booking Procedures", () => {
             });
 
             const ctx = { user: mockStudent };
-            const result = await bookingProcedures.getCurrentReservation.query(
-                { ctx } as any
-            );
+            const caller = bookingProcedures.createCaller({ ctx } as any);
+            const result = await caller.getCurrentReservation();
             expect(protectedCall).toHaveBeenCalled();
             expect(result).toEqual(mockCurrentReservation);
         });
@@ -66,8 +65,9 @@ describe("Booking Procedures", () => {
                 error: new Error("Database error")
             });
             const ctx = { user: mockStudent };
+            const caller = bookingProcedures.createCaller({ ctx } as any);
             await expect(
-                bookingProcedures.getCurrentReservation.query({ ctx } as any)
+                caller.getCurrentReservation()
             ).rejects.toThrow(TRPCError);
         });
     });
@@ -81,9 +81,8 @@ describe("Booking Procedures", () => {
             });
 
             const ctx = { user: mockStudent };
-            const result = await bookingProcedures.getReservationHistory.query(
-                { ctx } as any
-            );
+            const caller = bookingProcedures.createCaller({ ctx } as any);
+            const result = await caller.getReservationHistory();
 
             expect(protectedCall).toHaveBeenCalled();
             expect(result).toEqual(mockReservations);
@@ -98,8 +97,9 @@ describe("Booking Procedures", () => {
             });
 
             const ctx = { user: mockStudent };
+            const caller = bookingProcedures.createCaller({ ctx } as any);
             await expect(
-                bookingProcedures.getReservationHistory.query({ ctx } as any)
+                caller.getReservationHistory()
             ).rejects.toThrow(TRPCError);
         });
     });
