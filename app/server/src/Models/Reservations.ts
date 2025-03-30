@@ -54,6 +54,24 @@ export class Reservations {
      * @returns A room reservation if it exists, otherwise null.
      */
     public static async getCurrentReservation(studentID: string) {
-        return  0;
+        const now = new Date();
+        const response = await db.connection.oneOrNone(
+            `SELECT rr.*, r.name as roomName, r.location as roomLocation
+            FROM RoomRequest rr JOIN Room r ON rr.roomid = r.id
+            WHERE rr.studentid = $1 AND $2 BETWEEN rr.opendate AND rr.closedate
+            ORDER BY rr.closedate DESC LIMIT 1`,
+            [studentID, now]
+        );
+        if (!response) return null;
+        return {
+            reservationID: response.reservationid,
+            studentID: response.studentid,
+            roomID: response.roomid,
+            roomName: response.roomname,
+            roomLocation: response.roomLocation,
+            openDate: response.opendate,
+            closeDate: response.closedate,
+            isActive: true
+        }
     }
 }
