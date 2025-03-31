@@ -6,7 +6,7 @@ import { router } from "./trpc";
 export const procedures = router({
     auth: authProcedures,
     admin: adminProcedures,
-    reservations: bookingProcedures
+    reservation: bookingProcedures
 });
 
 export type Procedures = typeof procedures;
