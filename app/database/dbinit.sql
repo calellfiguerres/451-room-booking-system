@@ -22,6 +22,12 @@ CREATE TABLE if not exists Student (
     lastName VARCHAR(255) NOT NULL
 );
 
+create table if not exists Notifications (
+    id varchar(255) primary key,
+    studentId varchar(255) references Student(ID),
+    content text
+)
+
 CREATE TABLE IF NOT EXISTS Session (
     ID VARCHAR(255) PRIMARY KEY,
     adminID VARCHAR(255) REFERENCES Admin(ID),
