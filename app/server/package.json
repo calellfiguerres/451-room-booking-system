@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file=.env index.ts"
+    "dev": "tsx watch --env-file=.env index.ts",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -12,18 +13,22 @@
   "description": "",
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.1",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.13.10",
-    "@types/react": "^19.0.12",
-    "@types/react-dom": "^19.0.4",
-    "tsx": "^4.19.3"
+    "nodemon": "^3.1.9",
+    "ts-jest": "^29.3.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@trpc/server": "^11.0.0-rc.824",
+    "@trpc/server": "^11.0.0",
     "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "pg": "^8.13.3",
-    "pg-promise": "^11.10.2",
+    "pg-promise": "^11.13.0",
     "superjson": "^2.2.2",
     "zod": "^3.24.2"
   }
