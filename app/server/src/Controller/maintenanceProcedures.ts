@@ -109,3 +109,69 @@ export const maintenanceProcedures = router({
             
             return updateStatusCall.result;
         }),
+        
+    // get student's assigned rooms
+    getStudentRooms: authenticatedProcedure
+        .input(z.object({
+            studentId: z.string().nonempty(),
+        }))
+        .query(async (opts) => {
+            const { input } = opts;
+            
+            // for now uhhhh return all rooms instead of just the ones assigned to the student
+            const getRoomsCall = await protectedCall(async () => {
+                return await Room.getAll();
+            });
+            
+            if (!getRoomsCall.success) {
+                throw new TRPCError({ 
+                    code: "BAD_REQUEST", 
+                    message: "Failed to fetch student rooms" 
+                });
+            }
+            
+            return getRoomsCall.result;
+        }),
+        
+    // get all maintenance requests (admin only)
+    getAllMaintenanceRequests: adminOnlyProcedure.query(async (opts) => {
+        const result = await protectedCall(async () => {
+            return await MaintenanceRequest.getAll();
+        });
+        
+        if (!result.success) {
+            throw new TRPCError({ 
+                code: "INTERNAL_SERVER_ERROR", 
+                message: "Failed to fetch maintenance requests" 
+            });
+        }
+        
+        return result.result;
+    }),
+    
+    // update maintenance request status (admin only)
+    updateMaintenanceStatus: adminOnlyProcedure
+        .input(z.object({
+            requestId: z.string().nonempty(),
+            status: z.enum(['open', 'in-progress', 'closed']),
+        }))
+        .mutation(async (opts) => {
+            const { input } = opts;
+            
+            const updateStatusCall = await protectedCall(async () => {
+                return await MaintenanceRequest.updateStatus(
+                    input.requestId,
+                    input.status
+                );
+            });
+            
+            if (!updateStatusCall.success) {
+                throw new TRPCError({ 
+                    code: "BAD_REQUEST", 
+                    message: "Failed to update maintenance request status" 
+                });
+            }
+            
+            return updateStatusCall.result;
+        })
+});
