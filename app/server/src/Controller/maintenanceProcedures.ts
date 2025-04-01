@@ -1,0 +1,63 @@
+import { TRPCError } from "@trpc/server";
+import z from "zod";
+import { MaintenanceRequest } from "../Models/MaintenanceRequest";
+import { Room } from "../Models/Room";
+import { authenticatedProcedure, adminOnlyProcedure, router } from "./trpc";
+import { protectedCall } from "./utilities";
+
+export const maintenanceProcedures = router({
+    // create a new maintenance request
+    createMaintenanceRequest: authenticatedProcedure
+        .input(z.object({
+            studentId: z.string().nonempty(),
+            roomId: z.string().nonempty(),
+            description: z.string().nonempty(),
+        }))
+        .mutation(async (opts) => {
+            const { input } = opts;
+            
+            // create the maintenance request
+            const createRequestCall = await protectedCall(async () => {
+                return await MaintenanceRequest.add(
+                    input.studentId,
+                    input.roomId,
+                    input.description
+                );
+            });
+            
+            if (!createRequestCall.success) {
+                throw new TRPCError({ 
+                    code: "BAD_REQUEST", 
+                    message: "Failed to create maintenance request" 
+                });
+            }
+            
+            return createRequestCall.result;
+        }),
+    
+    // get the current session
+    getSession: authenticatedProcedure.query(async (opts) => {
+        return opts.ctx.session;
+    }),
+    
+    // get maintenance requests for a student
+    getStudentMaintenanceRequests: authenticatedProcedure
+        .input(z.object({
+            studentId: z.string().nonempty(),
+        }))
+        .query(async (opts) => {
+            const { input } = opts;
+            
+            const getRequestsCall = await protectedCall(async () => {
+                return await MaintenanceRequest.getByStudent(input.studentId);
+            });
+            
+            if (!getRequestsCall.success) {
+                throw new TRPCError({ 
+                    code: "BAD_REQUEST", 
+                    message: "Failed to fetch maintenance requests" 
+                });
+            }
+            
+            return getRequestsCall.result;
+        }),
