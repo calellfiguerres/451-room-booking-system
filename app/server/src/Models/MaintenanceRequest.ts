@@ -99,4 +99,36 @@ export class MaintenanceRequest {
       throw new Error("Invalid `MaintenanceRequest.add` arguments");
     }
   }
+
+  public static async updateStatus(id: string, status: string): Promise<MaintenanceRequest> {
+    let query;
+    let params;
+    const now = new Date();
+    
+    if (status === 'closed') {
+      query = `UPDATE maintenance_request 
+              SET status = $1, closedate = $2 
+              WHERE id = $3
+              RETURNING *`;
+      params = [status, now, id];
+    } else {
+      query = `UPDATE maintenance_request 
+              SET status = $1
+              WHERE id = $2
+              RETURNING *`;
+      params = [status, id];
+    }
+    
+    const response = await db.connection.one(query, params);
+    
+    return new MaintenanceRequest(
+      response.id, 
+      response.studentid, 
+      response.roomid, 
+      response.description, 
+      new Date(response.opendate), 
+      response.closedate ? new Date(response.closedate) : null, 
+      response.status
+    );
+  }
 }
