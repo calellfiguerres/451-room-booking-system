@@ -56,8 +56,7 @@ CREATE TABLE if not exists MaintenanceRequest (
     roomId VARCHAR(255) REFERENCES Room(ID),
     Description TEXT,
     openDate DATE NOT NULL,
-    closeDate DATE. -- made this nullable for requests that aren't closed yet
-    status VARCHAR(20) NOT NULL DEFAULT 'open'
+    closeDate DATE NOT NULL
 );
 
 
