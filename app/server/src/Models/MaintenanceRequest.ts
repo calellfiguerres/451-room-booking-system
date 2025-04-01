@@ -40,4 +40,20 @@ export class MaintenanceRequest {
     return result;
   }
 
+  public static async getByStudent(studentId: string) {
+    const response = await db.connection.any(
+      "SELECT * FROM maintenance_request WHERE studentid = $1 ORDER BY opendate DESC", 
+      [studentId]
+    );
+    const result = response.map((r) => new MaintenanceRequest(
+      r.id, 
+      r.studentid, 
+      r.roomid, 
+      r.description, 
+      new Date(r.opendate), 
+      r.closedate ? new Date(r.closedate) : null, 
+      r.status
+    ));
+    return result;
+  }
 }
