@@ -61,3 +61,51 @@ export const maintenanceProcedures = router({
             
             return getRequestsCall.result;
         }),
+    
+    // get a specific maintenance request
+    getMaintenanceRequest: authenticatedProcedure
+        .input(z.object({
+            requestId: z.string().nonempty(),
+        }))
+        .query(async (opts) => {
+            const { input } = opts;
+            
+            const getRequestCall = await protectedCall(async () => {
+                return await MaintenanceRequest.getById(input.requestId);
+            });
+            
+            if (!getRequestCall.success) {
+                throw new TRPCError({ 
+                    code: "NOT_FOUND", 
+                    message: "Maintenance request not found" 
+                });
+            }
+            
+            return getRequestCall.result;
+        }),
+    
+    // update maintenance request status
+    updateMaintenanceRequestStatus: authenticatedProcedure
+        .input(z.object({
+            requestId: z.string().nonempty(),
+            status: z.enum(['open', 'in-progress', 'closed']),
+        }))
+        .mutation(async (opts) => {
+            const { input } = opts;
+            
+            const updateStatusCall = await protectedCall(async () => {
+                return await MaintenanceRequest.updateStatus(
+                    input.requestId,
+                    input.status
+                );
+            });
+            
+            if (!updateStatusCall.success) {
+                throw new TRPCError({ 
+                    code: "BAD_REQUEST", 
+                    message: "Failed to update maintenance request status" 
+                });
+            }
+            
+            return updateStatusCall.result;
+        }),
