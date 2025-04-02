@@ -47,6 +47,25 @@ export class Reservations {
         }));
         return result;
     }
+    public static async getNotifications(studentID: string) {
+        const response = await db.connection.any(
+            `SELECT 
+                Notifications.id AS notification_id, 
+                Notifications.studentId AS student_id,
+                Student.username AS student_name, 
+                Notifications.content 
+            FROM Notifications
+            JOIN Student ON Notifications.studentId = Student.ID
+            WHERE Notifications.studentId = $1;`, [studentID]
+        );
+        const result = response.map((r) => ({
+            notificationID: r.notification_id,
+            studentID: r.student_id,
+            studentName: r.student_name,
+            text: r.content
+        }));
+        return result;
+    }
 
     /**
      * Fetches the current reservation made by a student.
