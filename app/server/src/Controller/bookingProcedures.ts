@@ -39,5 +39,17 @@ export const bookingProcedures = router({
             throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Could not retrieve reservation history." });
         }
         return historyCall.result;
-    })
+    }),
+    
+    getNotifications: studentOnlyProcedure.query(async (opts) => {
+        const { ctx } = opts;
+        const student = ctx.user as Student;
+        const notificationsCall = await protectedCall(async () => {
+            return await Reservations.getNotifications(student.id);
+        });
+        if (!notificationsCall.success) {
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Could not retrieve notifications." });
+        }
+        return notificationsCall.result;
+    }), 
 })
