@@ -64,4 +64,40 @@ export class Room {
             throw new Error("Invalid `Room.add` arguments");
         }
     }
+
+    // search for rooms based on criteria
+    public static async search(criteria: { 
+        name?: string, 
+        location?: string, 
+        description?: string 
+    }) {
+        let query = "SELECT * FROM room WHERE 1=1";
+        const params: any[] = [];
+        let paramIndex = 1;
+        
+        if (criteria.name) {
+        query += ` AND LOWER(name) LIKE LOWER($${paramIndex})`;
+        params.push(`%${criteria.name}%`);
+        paramIndex++;
+        }
+        
+        if (criteria.location) {
+        query += ` AND LOWER(location) LIKE LOWER($${paramIndex})`;
+        params.push(`%${criteria.location}%`);
+        paramIndex++;
+        }
+        
+        if (criteria.description) {
+        query += ` AND LOWER(description) LIKE LOWER($${paramIndex})`;
+        params.push(`%${criteria.description}%`);
+        paramIndex++;
+        }
+        
+        const response = await db.connection.any(query, params);
+        const result = response.map((r) => new Room(
+        r.id, r.name, r.description, r.location
+        ));
+        
+        return result;
+    }
 }
