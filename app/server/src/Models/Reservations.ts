@@ -93,4 +93,18 @@ export class Reservations {
             isActive: true
         }
     }
+
+    /**
+     * Creates an application request for a room reservation.
+     * @param studentID of the student submitting the application.
+     * @param roomID of the room being applied for.
+     * @param openDate of the application deadline window.
+     * @param closeDate of the application deadline window.
+     * @returns The reservation application.
+     */
+    public static async createReservationApplication(studentID: string, roomID: string, openDate: Date, closeDate: Date) {
+        return {
+
+        }
+    }
 }

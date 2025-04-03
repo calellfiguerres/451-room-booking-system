@@ -5,9 +5,18 @@ import db from "../Models/database";
 jest.mock("../Models/database", () => ({
     connection: {
         any: jest.fn(),
-        oneOrNone: jest.fn()
+        oneOrNone: jest.fn(),
+        one: jest.fn()
     }
 }));
+
+describe("Reservation Applications", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    describe
+});
 
 describe("Reservations", () => {
     // clears testing environment
