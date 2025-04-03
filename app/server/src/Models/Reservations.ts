@@ -103,8 +103,18 @@ export class Reservations {
      * @returns The reservation application.
      */
     public static async createReservationApplication(studentID: string, roomID: string, openDate: Date, closeDate: Date) {
+        const reservationID = await db.connection.one(
+            `INSERT INTO RoomRequest (studentid, roomid, opendate, closedate)
+            VALUES ($1, $2, $3, $4)
+            RETURNING requestid`, [studentID, roomID, openDate, closeDate]
+        );
         return {
-
-        }
+            reservationID: reservationID.requestid,
+            studentID,
+            roomID,
+            openDate,
+            closeDate,
+            isActive: new Date() >= openDate && new Date() <= closeDate
+        };
     }
 }
