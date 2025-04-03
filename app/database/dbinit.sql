@@ -22,6 +22,12 @@ CREATE TABLE if not exists Student (
     lastName VARCHAR(255) NOT NULL
 );
 
+create table if not exists Notifications (
+    id varchar(255) primary key,
+    studentId varchar(255) references Student(ID),
+    content text
+)
+
 CREATE TABLE IF NOT EXISTS Session (
     ID VARCHAR(255) PRIMARY KEY,
     adminID VARCHAR(255) REFERENCES Admin(ID),
@@ -56,7 +62,8 @@ CREATE TABLE if not exists MaintenanceRequest (
     roomId VARCHAR(255) REFERENCES Room(ID),
     Description TEXT,
     openDate DATE NOT NULL,
-    closeDate DATE NOT NULL
+    closeDate DATE, -- made this nullable for requests that aren't closed yet
+    status VARCHAR(20) NOT NULL DEFAULT 'open'
 );
 
 
