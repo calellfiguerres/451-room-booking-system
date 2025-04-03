@@ -9,5 +9,6 @@ export default [
     route("notifications", "routes/notifications.tsx"),
     route("roomList", "routes/roomList.tsx"),
     route("reservations", "routes/viewReservations.tsx"),
+    route("application", "routes/viewApplicationForm.tsx"),
     route("maintenanceList", "routes/maintenanceList.tsx"),
 ] satisfies RouteConfig;
