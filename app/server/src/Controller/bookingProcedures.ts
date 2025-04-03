@@ -3,6 +3,7 @@ import { Reservations } from "../Models/Reservations";
 import { protectedCall } from "./utilities";
 import { TRPCError } from "@trpc/server";
 import { Student } from "../Models/Student";
+import z from "zod";
 
 /**
  * Implements procedures for reservations.
@@ -52,4 +53,40 @@ export const bookingProcedures = router({
         }
         return notificationsCall.result;
     }), 
+
+    /**
+     * Defines the procedure for generating a reservation application for a room.
+     * @returns call for an application submission request.
+     */
+    createReservationApplication: studentOnlyProcedure.input(
+        z.object({
+            roomID: z.string().nonempty(),
+            openDate: z.date(),
+            closeDate: z.date()
+        })
+    ).mutation(async (opts) => {
+        const { ctx, input } = opts;
+        const student = ctx.user as Student;
+        if (input.closeDate <= input.openDate) {
+            throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Close date should be later than open date."
+            });
+        }
+        const appCall = await protectedCall(async () => {
+            return await Reservations.createReservationApplication(
+                student.id,
+                input.roomID,
+                input.openDate,
+                input.closeDate
+            );
+        });
+        if (!appCall.success) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "An error occurred while generating your application."
+            });
+        }
+        return appCall.result;
+    })
 })
