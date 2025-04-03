@@ -15,13 +15,40 @@ describe("Reservation Applications", () => {
         jest.clearAllMocks();
     });
 
-    describe
-});
+    describe("createReservationApplication", () => {
+        it("should successfully generate a reservation application submission", async () => {
+            const studentID = "12345";
+            const roomID = "room-1";
+            const openDate = new Date("2025-03-04");
+            const closeDate = new Date("2025-08-01");
+            const mockReservationID = { requestid: 789 };
+            (db.connection.one as jest.Mock).mockResolvedValue(mockReservationID);
+            const result = await Reservations.createReservationApplication(
+                studentID, roomID, openDate, closeDate
+            );
+            expect(db.connection.one).toHaveBeenCalledWith(
+                expect.stringContaining("INSERT INTO RoomRequest"),
+                [studentID, roomID, openDate, closeDate]
+            );
+            expect(result).toHaveProperty("reservationID", 789);
+            expect(result).toHaveProperty("studentID", studentID);
+            expect(result).toHaveProperty("roomID", roomID);
+            expect(result).toHaveProperty("openDate", openDate);
+            expect(result).toHaveProperty("closeDate", closeDate);
+            expect(result).toHaveProperty("isActive");
+        });
 
-describe("Reservations", () => {
-    // clears testing environment
-    beforeEach(() => {
-        jest.clearAllMocks();
+        it("should throw database errors when generating an application submission", async () => {
+            const msg = "Database error";
+            (db.connection.one as jest.Mock).mockRejectedValue(new Error(msg));
+            const studentID = "12345";
+            const roomID = "room-1";
+            const openDate = new Date("2025-03-04");
+            const closeDate = new Date("2025-08-01");
+            await expect(
+                Reservations.createReservationApplication(studentID, roomID, openDate, closeDate)
+            ).rejects.toThrow(msg);
+        });
     });
 
     describe("getReservationHistory", () => {
