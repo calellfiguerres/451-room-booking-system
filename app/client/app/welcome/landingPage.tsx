@@ -15,6 +15,8 @@ export function LandingPage() {
                 <div className='grid sm:grid-cols-1 lg:grid-cols-1 gap-8 my-4'>
                     <Box link="/usersList" text="View users"/>
                     <Box link="/reservations" text="Room Reservations"/>
+                    <Box link="/applications" text="Reservation Applications"/>
+                    <Box link="/maintenanceList" text="Maintenance Requests"/>
                 </div>
             </div>
         </div>
