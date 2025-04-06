@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "~/.client/Providers/trpc";
 import Box from "~/Components/Box";
 import UserDisplay from "~/Components/UserDisplay";
+import HomeBox from "~/Components/HomeBox";
 
 interface User {
     id: string;
@@ -21,7 +22,12 @@ export default function usersList() {
 
   return (
     <div className='w-full pb-10 bg-black/10 height-minus-nav'>
+        <div className="absolute top-5 right-5 flex items-center space-x-3 z-10">             
+            <HomeBox homeLink="/" />
+        </div>
         <div className='max-w-[1240px] py-8 px-2 mx-auto space-y-4'>
+
+
             <div className="rounded-md bg-white py-8 my-4">
                 <p className='text-2xl text-center tracking-widest'>
                     USERS List
