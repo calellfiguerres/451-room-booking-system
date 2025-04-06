@@ -36,9 +36,8 @@ sprint, for quality:
 * [Maintenance requests](https://github.com/calellfiguerres/451-room-booking-system/pull/27)
 * [Notifications](https://github.com/calellfiguerres/451-room-booking-system/pull/31)
 * [Search rooms](https://github.com/calellfiguerres/451-room-booking-system/pull/32)
-* [Aaron's PR](link)
-* [Calell's PR](link)
-* [Josh's PR](link)
+* [View and Submit Roommate Requests](https://github.com/calellfiguerres/451-room-booking-system/pull/39)
+* [App Navigation](https://github.com/calellfiguerres/451-room-booking-system/pull/38)
 
 ## Retrospective Summary
 Here's what went well:
