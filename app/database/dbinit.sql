@@ -68,7 +68,7 @@ CREATE TABLE if not exists MaintenanceRequest (
 
 
 CREATE TABLE if not exists RoommateRequest (
-    requestID INT PRIMARY KEY,
+    requestID VARCHAR(255) PRIMARY KEY,
     requesterId VARCHAR(255) REFERENCES Student(ID),
     requesteeId VARCHAR(255) REFERENCES Student(ID),
     Message TEXT,
@@ -79,5 +79,5 @@ CREATE TABLE if not exists RoommateRequest (
 CREATE TABLE if not exists AdminRoomRequestManagement (
     managementID VARCHAR(255) PRIMARY KEY,
     adminID VARCHAR(255) REFERENCES Admin(ID),
-    requestID INT REFERENCES RoomRequest(requestID)
+    requestID VARCHAR(255) REFERENCES RoomRequest(requestID)
 );
