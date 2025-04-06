@@ -37,7 +37,7 @@ export const roommateRequestProcedures = router({
         const requesterId = opts.ctx.user.id;
         console.log(input);
         await RoommateRequest.addRoommateRequest(
-            requesterId, input.requesteeId, input.message, `${input.senddate.getFullYear()}-${input.senddate.getMonth()}-${input.senddate.getDay()}`
+            requesterId, input.requesteeId, input.message, `${input.senddate.getFullYear()}-${input.senddate.getMonth() + 1}-${input.senddate.getDate()}`
         );
     })
 });
