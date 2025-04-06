@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "~/.client/Providers/trpc";
 import ReservationDisplay from "~/Components/ReservationDisplay";
 import Box from "~/Components/Box";
+import HomeBox from "~/Components/HomeBox";
 
 interface Reservation {
     reservationID: number;
@@ -40,7 +41,10 @@ export default function ViewReservations() {
         getReservationData();
     }, []);
     return (
-        <div className="w-full pb-10 bg-black/10 height-minus-nav">
+        <div className="w-full pb-10 bg-black/10 height-minus-nav">            
+            <div className="absolute top-5 right-5 flex items-center space-x-3 z-10">             
+                        <HomeBox homeLink="/" />
+                    </div>
             <div className="max-w-[1240px] py-8 px-4 mx-auto space-y-6">
                 <div className="rounded-md bg-white py-6 px-8">
                     <h1 className="text-2xl text-center font-semibold tracking-widest mb-2">
@@ -91,9 +95,6 @@ export default function ViewReservations() {
                             </div>
                         </>
                     )}
-                </div>
-                <div className="flex justify-center">
-                    <Box link="/" text="Return Home" />
                 </div>
             </div>
         </div>

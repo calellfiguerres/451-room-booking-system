@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { api } from "~/.client/Providers/trpc";
+import HomeBox from "~/Components/HomeBox";
 
 export default function login() {
     const [ username, setUsername ] = useState("");
@@ -26,6 +27,10 @@ export default function login() {
     return (
         <>
             <div className="w-full p-10 bg-black/10 height-minus-nav">
+                <div className="absolute top-5 right-5 flex items-center space-x-3 z-10">             
+                    <HomeBox homeLink="/" />
+                </div>
+
                 { loginError ? (
                     <p className="bg-red-300 rounded-md mx-5 p-2">
                         Invalid Username or Password

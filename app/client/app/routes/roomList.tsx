@@ -5,6 +5,7 @@ import Box from "~/Components/Box";
 import RoomDisplay from "~/Components/RoomDisplay";
 import type { Room } from "../../../server/src/Models/Room";
 import { useNavigate } from "react-router";
+import HomeBox from "~/Components/HomeBox";
 
 export default function roomList() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -89,7 +90,10 @@ export default function roomList() {
   return (
 
     <div className="w-full pb-10 bg-black/10 height-minus-nav">
-
+      
+      <div className="absolute top-5 right-5 flex items-center space-x-3 z-10">             
+                  <HomeBox homeLink="/" />
+              </div>
 
       <h1 className="text-2xl text-center py-2">Rooms</h1>
       

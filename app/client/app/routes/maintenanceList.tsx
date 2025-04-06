@@ -3,6 +3,7 @@ import { api } from "~/.client/Providers/trpc";
 import MaintenanceRequestDisplay from "~/Components/MaintenanceRequestDisplay";
 import { useNavigate } from "react-router";
 import type { MaintenanceRequest } from "../../../server/src/Models/MaintenanceRequest";
+import HomeBox from "~/Components/HomeBox";
 
 function getStudentId(session: any): string | null {
     console.log("Session structure:", session);
@@ -113,6 +114,10 @@ export default function maintenanceList() {
 
     return (
         <div className="w-full pb-10 bg-black/10 height-minus-nav">
+            
+            <div className="absolute top-5 right-5 flex items-center space-x-3 z-10">             
+                        <HomeBox homeLink="/" />
+                    </div>
             <h1 className="text-2xl text-center py-2">Maintenance Requests</h1>
             
             {/* Error message */}
