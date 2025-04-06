@@ -14,6 +14,7 @@ export function LandingPage() {
                     <Box link="/signup" text="Signup" />
                     <Box link="/usersList" text="View users"/>
                     <Box link="/reservations" text="Room Reservations"/>
+                    <Box link="/roommateRequests" text="Roommate Requests" />
                     <Box link="/maintenanceList" text="Maintenance List" />
                 </div>
             </div>
