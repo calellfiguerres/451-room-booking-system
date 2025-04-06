@@ -21,6 +21,8 @@ export function LandingPage() {
   const usersListPath = "/usersList";
   const reservationsPath = "/reservations";
   const signupPath = "/signup";
+  const maintenancePath = "/maintenanceList";
+  const roomPath = "/roomList";
 
   return (
     <div className='w-full pb-10 bg-black/10 height-minus-nav relative'>
@@ -43,7 +45,9 @@ export function LandingPage() {
         <div className='max-w-[1240px] py-8 px-16 mx-auto pt-16'>
           <div className='grid sm:grid-cols-1 lg:grid-cols-1 gap-8 my-4'>
             <Box link={usersListPath} text="View users" />
+            <Box link={roomPath} text="Rooms" />
             <Box link={reservationsPath} text="Room Reservations" />
+            <Box link={maintenancePath} text="Maintenance Form" />            
           </div>
         </div>
       </div>
