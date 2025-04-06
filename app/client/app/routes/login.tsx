@@ -17,7 +17,7 @@ export default function login() {
                 loginAsAdmin: loginAsAdmin
             });
             
-            navigate("/usersList");
+            navigate("/");
         } catch {
             setLoginError(true);
         }
