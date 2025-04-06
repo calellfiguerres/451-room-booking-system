@@ -7,7 +7,7 @@ export default function Logout() {
 
     useEffect(() => {
         api.auth.logout.mutate();
-        navigate("/login");
+        navigate("/");
     }, []);
 
     // return (

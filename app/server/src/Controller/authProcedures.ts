@@ -8,6 +8,20 @@ import { authenticatedProcedure, publicProcedure, router } from "./trpc";
 import { protectedCall } from "./utilities";
 
 export const authProcedures = router({
+
+    
+    checkAuth: authenticatedProcedure.query(async (opts) => {
+
+        const { ctx } = opts;
+        
+        if (ctx.session && ctx.user) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }),
+
     login: publicProcedure.input(z.object({
         username: z.string().min(1),
         password: z.string().min(1),
@@ -102,4 +116,5 @@ export const authProcedures = router({
         }
         return createAdminCall.result;
     }),
+    
 })

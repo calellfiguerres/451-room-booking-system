@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "~/.client/Providers/trpc";
+import HomeBox from "~/Components/HomeBox";
 
 export default function Signup() {
     const [ firstName, setFirstName ] = useState("");
@@ -34,6 +35,10 @@ export default function Signup() {
     return (
         <>
             <div className="w-full p-10 bg-black/10 height-minus-nav">
+
+                <div className="absolute top-5 right-5 flex items-center space-x-3 z-10">             
+                    <HomeBox homeLink="/" />
+                </div>
                 { isError ? (
                     <p className="bg-red-300 rounded-md mx-5 p-2">
                         {errorMsg}
