@@ -23,6 +23,7 @@ export function LandingPage() {
   const signupPath = "/signup";
   const maintenancePath = "/maintenanceList";
   const roomPath = "/roomList";
+  const roommateRequestsPath = "/roommateRequests";
 
   return (
     <div className='w-full pb-10 bg-black/10 height-minus-nav relative'>
@@ -47,7 +48,8 @@ export function LandingPage() {
             <Box link={usersListPath} text="View users" />
             <Box link={roomPath} text="Rooms" />
             <Box link={reservationsPath} text="Room Reservations" />
-            <Box link={maintenancePath} text="Maintenance Form" />            
+            <Box link={maintenancePath} text="Maintenance Form" />     
+            <Box link={roommateRequestsPath} text="Roommate Requests" />       
           </div>
         </div>
       </div>
