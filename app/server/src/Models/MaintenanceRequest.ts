@@ -70,6 +70,13 @@ export class MaintenanceRequest {
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [id, request.studentId, request.roomId, request.description, now, null, 'open']
       );
+      // Send notification to the requester
+        const id1 = randomUUID();
+        await db.connection.none(
+            `INSERT INTO notifications (id, studentid, content)
+            VALUES ($1, $2, $3)`,
+            [id1, request.studentId, `You have created a maintenance request`]
+        );
       return new MaintenanceRequest(
         id, 
         request.studentId, 
@@ -86,6 +93,13 @@ export class MaintenanceRequest {
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [id, studentId, roomId, description, now, null, 'open']
       );
+      // Send notification to the requester
+        const id1 = randomUUID();
+        await db.connection.none(
+            `INSERT INTO notifications (id, studentid, content)
+            VALUES ($1, $2, $3)`,
+            [id1, studentId, `You have created a maintenance request`]
+        );
       return new MaintenanceRequest(
         id, 
         studentId, 

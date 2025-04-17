@@ -60,4 +60,22 @@ export class RoommateRequest {
             [id, requesterId, requesteeId, message, senddate]
         );
     }
+
+    public static async sendNotification(requesterId: string, requesteeId: string) {
+        // Send to requester
+        const id1 = randomUUID();
+        await db.connection.none(
+            `INSERT INTO notifications (id, studentid, content)
+            VALUES ($1, $2, $3)`,
+            [id1, requesterId, `You have sent a roommate request to ${requesteeId}`]
+        );
+
+        // Send to requestee
+        const id2 = randomUUID();
+        await db.connection.none(
+            `INSERT INTO notifications (id, studentid, content)
+            VALUES ($1, $2, $3)`,
+            [id2, requesteeId, `You have received a roommate request from ${requesterId}`]
+        );
+    }
 }
