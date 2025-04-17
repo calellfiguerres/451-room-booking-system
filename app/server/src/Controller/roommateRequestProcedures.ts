@@ -39,5 +39,8 @@ export const roommateRequestProcedures = router({
         await RoommateRequest.addRoommateRequest(
             requesterId, input.requesteeId, input.message, `${input.senddate.getFullYear()}-${input.senddate.getMonth() + 1}-${input.senddate.getDate()}`
         );
+        await RoommateRequest.sendNotification(
+            requesterId, input.requesteeId
+        )
     })
 });
