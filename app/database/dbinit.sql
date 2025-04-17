@@ -26,7 +26,7 @@ create table if not exists Notifications (
     id varchar(255) primary key,
     studentId varchar(255) references Student(ID),
     content text
-)
+);
 
 CREATE TABLE IF NOT EXISTS Session (
     ID VARCHAR(255) PRIMARY KEY,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS Session (
 );
 
 CREATE TABLE if not exists RoomRequest (
-    requestID INT PRIMARY KEY,
+    requestID VARCHAR(255) PRIMARY KEY,
     studentId VARCHAR(255) REFERENCES Student(ID),
     roomId VARCHAR(255) REFERENCES Room(ID),
     openDate DATE NOT NULL,
