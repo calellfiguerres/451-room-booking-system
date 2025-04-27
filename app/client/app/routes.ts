@@ -10,5 +10,6 @@ export default [
     route("roomList", "routes/roomList.tsx"),
     route("reservations", "routes/viewReservations.tsx"),
     route("maintenanceList", "routes/maintenanceList.tsx"),
-    route("roommateRequests", "routes/roommateRequests.tsx")
+    route("roommateRequests", "routes/roommateRequests.tsx"),
+    route("data", "routes/viewData.tsx")
 ] satisfies RouteConfig;
