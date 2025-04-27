@@ -3,20 +3,27 @@ import { api } from "~/.client/Providers/trpc";
 import Box from "~/Components/Box";
 import UserDisplay from "~/Components/UserDisplay";
 import HomeBox from "~/Components/HomeBox";
+import type { Room } from "../../../server/src/Models/Room";
+import RoomDisplay from "~/Components/RoomDisplay";
+import BasicData from "~/Components/BasicData";
 
-interface DataProperty {
+interface User {
     id: string;
-    amount: Number;
+    firstname: string;
+    lastname: string;
 }
 
 export default function usersList() {
-//     const [students, setStudents] = useState<User[]>([]);
-//     const [admins, setAdmins] = useState<User[]>([]);
+    const [students, setStudents] = useState<User[]>([]);
+    const [admins, setAdmins] = useState<User[]>([]);
+    const [rooms, setRooms] = useState<Room[]>([]);
     
-//   useEffect(() => {
-//     api.admin.getAdmins.query().then((res) => setAdmins(res));
-//     api.admin.getStudents.query().then((res) => setStudents(res));
-//   }, []);
+  useEffect(() => {
+    api.admin.getAdmins.query().then((res) => setAdmins(res));
+    api.admin.getStudents.query().then((res) => setStudents(res));
+    api.admin.getRooms.query().then((res) => setRooms(res));
+  }, []);
+  
 
   return (
     <div className='w-full pb-10 bg-black/10 height-minus-nav'>
@@ -32,31 +39,39 @@ export default function usersList() {
                 </p>
             </div>
 
-            {/* <div className='max-w-[1240px] py-8 px-16 mx-auto '>
-                <p>Admin</p>
-                <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
-                    {admins.map(a => (
-                        <UserDisplay
-                            id={a.id}
-                            firstName={a.firstname}
-                            lastName={a.lastname}
-                        />
-                    ))}
-                </div>
+            <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
+                {
+                    <BasicData
+                        name = 'Total Users'
+                        amount = {admins.length + students.length}
+                        ></BasicData>
+                }
             </div>
-
-            <div className='max-w-[1240px] py-8 px-16 mx-auto '>
-                <p>Students</p>
-                <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
-                    {students.map(s => (
-                        <UserDisplay
-                            id={s.id}
-                            firstName={s.firstname}
-                            lastName={s.lastname}
-                        />
-                    ))}
-                </div>
-            </div> */}
+            <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
+                {
+                    <BasicData
+                        name = 'Admins'
+                        amount = {admins.length}
+                        ></BasicData>
+                }
+            </div>
+            <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
+                {
+                    <BasicData
+                        name = 'Students'
+                        amount = {students.length}
+                        ></BasicData>
+                }
+            </div>
+            <div className="mx-auto my-4 columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4 ">
+                {
+                    <BasicData
+                        name = 'Rooms'
+                        amount = {rooms.length}
+                        ></BasicData>
+                }
+            </div>
+            
         </div>
     </div>
   );
