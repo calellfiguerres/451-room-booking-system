@@ -204,7 +204,7 @@ export class RoomApplication {
       if (adminId) {
         const managementId = randomUUID();
         await db.connection.none(
-          `INSERT INTO AdminRoomrequestManagement (managementid, adminid, requestid)
+          `INSERT INTO AdminRoomRequestManagement (managementid, adminid, requestid)
           VALUES ($1, $2, $3)`,
           [managementId, adminId, requestId]
         );
