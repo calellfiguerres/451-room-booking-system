@@ -23,7 +23,7 @@ interface EventStore {
   clearNotifications: () => void;
 }
 
-// Simple event emitter to replace zustand (since you don't have it installed)
+// EventEmitter class for managing state and events
 class EventEmitter {
   private static instance: EventEmitter | null = null;
   private listeners: Map<string, ((data: any) => void)[]> = new Map();
@@ -182,7 +182,7 @@ const eventStore: EventStore = {
   }
 };
 
-// React hook for easy integration
+// Hook to use the event store in components
 export function useRealTimeEvents(studentId?: string): {
   connected: boolean;
   notifications: Notification[];
