@@ -63,7 +63,7 @@ export default function ApplicationForm() {
       setComments("");
       // directs user to view applications page
       setTimeout(() => {
-        navigate("/applications");
+        navigate("/viewApplications");
       }, 1500);
     } catch (err: any) {
       setError(err.message || "Failed to submit application.");
