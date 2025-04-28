@@ -5,6 +5,7 @@ import { bookingProcedures } from "./bookingProcedures";
 import { roomProcedures } from "./roomProcedures";
 import { router } from "./trpc";
 import { roommateRequestProcedures } from "./roommateRequestProcedures";
+import { applicationProcedures } from "./applicationProcedures";
 
 export const procedures = router({
     auth: authProcedures,
@@ -12,7 +13,8 @@ export const procedures = router({
     maintenance: maintenanceProcedures,
     reservation: bookingProcedures,
     roommateRequest: roommateRequestProcedures,
-    rooms: roomProcedures
+    rooms: roomProcedures,
+    application: applicationProcedures
 });
 
 export type Procedures = typeof procedures;
