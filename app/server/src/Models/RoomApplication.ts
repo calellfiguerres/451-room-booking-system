@@ -51,7 +51,18 @@ export class RoomApplication {
      * @param id 
      */
     public static async getAppById(id: string) {
-
+        const response = await db.connection.one("SELECT * FROM room_application WHERE id = $1", [id]);
+        const result = new RoomApplication(
+            response.id,
+            response.student_id,
+            response.room_id,
+            new Date(response.request_date),
+            new Date(response.start_date),
+            new Date(response.end_date),
+            response.status,
+            response.comments
+        );
+        return result;
     }
 
     /**
