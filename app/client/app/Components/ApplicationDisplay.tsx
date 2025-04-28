@@ -43,7 +43,7 @@ const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({
    * @param status the status of the application.
    * @returns the color depending the status of the application.
    */
-  const getStatusResponseColors = (status: string) => {
+  const getStatusResponseColors = () => {
     switch (status) {
       case 'approved':
         return 'text-green-600';
@@ -55,8 +55,29 @@ const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({
   };
 
   return (
-    <div>
-      
+    <div className="break-inside-avoid rounded-md bg-white mb-4">
+      <div className="p-4 space-y-2">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-bold">{roomName}</h3>
+          <span className={`font-medium ${getStatusResponseColors()}`}>
+            {status.toUpperCase()}
+          </span>
+        </div>
+        <p className="text-gray-600">Location: {roomLocation}</p>
+        <p className="text-gray-600">Request Date: {dateView(requestDate)}</p>
+        <div className="flex justify-between text-sm text-gray-500">
+          <span>From: {dateView(startDate)}</span>
+          <span>To: {dateView(endDate)}</span>
+        </div>
+        {comments && (
+          <div className="mt-2 pt-2 border-t border-gray-200">
+            <p className="text-sm text-gray-700">{comments}</p>
+          </div>
+        )}
+        <p className="text-xs text-gray-400">Application ID: {id}</p>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default ApplicationDisplay;
