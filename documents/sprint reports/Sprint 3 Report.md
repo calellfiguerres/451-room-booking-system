@@ -1,6 +1,7 @@
 # Sprint 3 Report (April 5 2025 to Apr 27 2025)
 
-## YouTube link of Sprint * Video (Make this video unlisted)
+## Sprint Video
+https://youtu.be/6QTBeHOto7E
 
 ## What's New (User Facing)
 * Students can now receive real time booking updates
