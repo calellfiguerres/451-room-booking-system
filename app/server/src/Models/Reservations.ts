@@ -1,5 +1,7 @@
 // this import is extremely important, leave it alone or else you better impulsively lock your doors and windows
 import { resolveResponse } from "@trpc/server/unstable-core-do-not-import";
+import { randomUUID } from "node:crypto";
+import { EventsService } from "../Controller/eventsProcedures";
 
 import db from "./database";
 
@@ -92,5 +94,135 @@ export class Reservations {
             closeDate: response.closedate,
             isActive: true
         }
+    }
+
+    /**
+     * Creates a new room booking with real-time updates
+     * @param studentID Student making the booking
+     * @param roomID Room to book
+     * @param openDate Start date of booking
+     * @param closeDate End date of booking
+     * @returns The new booking details or throws an error if booking fails
+     */
+    public static async createReservationWithRealtime(
+        studentID: string,
+        roomID: string,
+        openDate: Date,
+        closeDate: Date
+    ) {
+        // Use a transaction for atomic operations
+        return await db.connection.tx(async t => {
+            // Check if room is available with row locking
+            const room = await t.oneOrNone(
+                `SELECT ID, booked, booked_by, Name, Location 
+                FROM Room WHERE ID = $1 FOR UPDATE`,
+                [roomID]
+            );
+            
+            if (!room) {
+                throw new Error(`Room with ID ${roomID} does not exist`);
+            }
+            
+            if (room.booked) {
+                throw new Error(`Room ${room.name} is already booked`);
+            }
+            
+            // Generate request ID
+            const requestID = randomUUID();
+            
+            // Create the booking
+            await t.none(
+                `INSERT INTO RoomRequest (requestID, studentId, roomId, openDate, closeDate)
+                VALUES ($1, $2, $3, $4, $5)`,
+                [requestID, studentID, roomID, openDate, closeDate]
+            );
+            
+            // Update room status
+            await t.none(
+                `UPDATE Room SET booked = true, booked_by = $1 WHERE ID = $2`,
+                [studentID, roomID]
+            );
+            
+            // Get room details for the response
+            const roomDetails = await t.one(
+                `SELECT Name as roomName, Location as roomLocation FROM Room WHERE ID = $1`,
+                [roomID]
+            );
+            
+            // Send real-time notification
+            await EventsService.sendNotification(
+                studentID,
+                `Your booking for ${roomDetails.roomname} (${roomDetails.roomlocation}) was successful`
+            );
+            
+            // Broadcast room status change to all connected clients
+            EventsService.broadcastRoomStatus(roomID, 'booked', studentID);
+            
+            // Return the booking details
+            return {
+                reservationID: requestID,
+                studentID,
+                roomID,
+                roomName: roomDetails.roomname,
+                roomLocation: roomDetails.roomlocation,
+                openDate,
+                closeDate,
+                isActive: true
+            };
+        }).catch(error => {
+            console.error('Error creating reservation:', error);
+            throw error;
+        });
+    }
+
+    /**
+     * Cancels an existing booking
+     * @param reservationID Booking to cancel
+     * @returns Status of the cancellation
+     */
+    public static async cancelReservation(reservationID: string) {
+        return await db.connection.tx(async t => {
+            // Get booking details
+            const booking = await t.oneOrNone(
+                `SELECT RR.studentId, RR.roomId, R.Name, R.Location 
+                FROM RoomRequest RR
+                JOIN Room R ON RR.roomId = R.ID 
+                WHERE RR.requestID = $1`,
+                [reservationID]
+            );
+            
+            if (!booking) {
+                throw new Error('Booking not found');
+            }
+            
+            // Update room status
+            await t.none(
+                `UPDATE Room SET booked = false, booked_by = NULL WHERE ID = $1`,
+                [booking.roomid]
+            );
+            
+            // Mark the booking as canceled (update closeDate to current date)
+            await t.none(
+                `UPDATE RoomRequest SET closeDate = CURRENT_DATE WHERE requestID = $1`,
+                [reservationID]
+            );
+            
+            // Send notification to the student
+            await EventsService.sendNotification(
+                booking.studentid,
+                `Your booking for ${booking.name} (${booking.location}) has been canceled`
+            );
+            
+            // Broadcast room status change
+            EventsService.broadcastRoomStatus(booking.roomid, 'available');
+            
+            return { 
+                success: true, 
+                message: `Booking for ${booking.name} has been canceled`
+            };
+        }).catch(error => {
+            console.error('Error canceling reservation:', error);
+            throw new Error(`Failed to cancel reservation: ${error.message}`);
+        });
     }
 }
