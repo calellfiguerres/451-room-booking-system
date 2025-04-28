@@ -1,7 +1,5 @@
 import { randomUUID } from "crypto";
 import db from "./database";
-import { response } from "express";
-import { string } from "zod";
 
 /**
  * Database model for room applications.
@@ -33,7 +31,7 @@ export class RoomApplication {
    * Retrieves all room applications from the database.
    */
   public static async getAllApps() {
-    const response = await db.connection.any("SELECT * FROM room_application");
+    const response = await db.connection.any("SELECT * FROM RoomApplication");
     const result = response.map((r) => new RoomApplication(
       r.id,
       r.student_id,
@@ -52,7 +50,7 @@ export class RoomApplication {
    * @param id Application ID.
    */
   public static async getAppById(id: string) {
-    const response = await db.connection.one("SELECT * FROM room_application WHERE id = $1", [id]);
+    const response = await db.connection.one("SELECT * FROM RoomApplication WHERE id = $1", [id]);
     const result = new RoomApplication(
       response.id,
       response.student_id,
@@ -73,7 +71,7 @@ export class RoomApplication {
   public static async getAppsByStudentId(studentId: string) {
     const response = await db.connection.any(
       "SELECT ra.*, r.name as room_name, r.location as room_location " +
-      "FROM room_application ra " +
+      "FROM RoomApplication ra " +
       "JOIN room r ON ra.room_id = r.id " +
       "WHERE ra.student_id = $1 " +
       "ORDER BY ra.request_date DESC",
@@ -119,7 +117,7 @@ export class RoomApplication {
       const app = arg;
       // insert application into the database
       await db.connection.none(
-        `INSERT INTO room_application (id, student_id, room_id, request_date, start_date, end_date, status, comments)
+        `INSERT INTO RoomApplication (id, student_id, room_id, request_date, start_date, end_date, status, comments)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [id, app.studentId, app.roomId, date, app.startDate, app.endDate, 'pending', app.comments]
       );
@@ -143,7 +141,7 @@ export class RoomApplication {
     } else if (arg && roomId && startDate && endDate) {
       const studentId = arg;
       await db.connection.none(
-        `INSERT INTO room_application (id, student_id, room_id, request_date, start_date, end_date, status, comments)
+        `INSERT INTO RoomApplication (id, student_id, room_id, request_date, start_date, end_date, status, comments)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [id, studentId, roomId, date, startDate, endDate, 'pending', comments || '']
       );
@@ -181,7 +179,7 @@ export class RoomApplication {
     adminId?: string
   ): Promise<RoomApplication> {
     const response = await db.connection.one(
-      `UPDATE room_application
+      `UPDATE RoomApplication
       SET status = $1
       WHERE id = $2
       RETURNING *`,
