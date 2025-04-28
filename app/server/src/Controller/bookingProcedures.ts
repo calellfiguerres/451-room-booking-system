@@ -4,6 +4,7 @@ import { protectedCall } from "./utilities";
 import { TRPCError } from "@trpc/server";
 import { Student } from "../Models/Student";
 import { authProcedures } from "./authProcedures";
+import { z } from "zod";
 
 /**
  * Implements procedures for reservations.
@@ -52,5 +53,75 @@ export const bookingProcedures = router({
             throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Could not retrieve notifications." });
         }
         return notificationsCall.result;
-    }), 
-})
+    }),
+
+    /**
+     * Defines the procedure for creating a new reservation with real-time updates.
+     * @returns The newly created reservation.
+     */
+    createReservationRealtime: studentOnlyProcedure
+        .input(z.object({
+            roomID: z.string(),
+            openDate: z.date(),
+            closeDate: z.date()
+        }))
+        .mutation(async (opts) => {
+            const { ctx, input } = opts;
+            const student = ctx.user as Student;
+            
+            const reservationCall = await protectedCall(async () => {
+                return await Reservations.createReservationWithRealtime(
+                    student.id,
+                    input.roomID,
+                    input.openDate,
+                    input.closeDate
+                );
+            });
+            
+            if (!reservationCall.success) {
+                throw new TRPCError({ 
+                    code: "INTERNAL_SERVER_ERROR", 
+                    message: reservationCall.error?.message || "Failed to create reservation." 
+                });
+            }
+            
+            return reservationCall.result;
+        }),
+
+    /**
+     * Defines the procedure for canceling a reservation with real-time updates.
+     * @returns Status of the cancellation.
+     */
+    cancelReservation: studentOnlyProcedure
+        .input(z.object({
+            reservationID: z.string()
+        }))
+        .mutation(async (opts) => {
+            const { ctx, input } = opts;
+            const student = ctx.user as Student;
+            
+            // Verify the reservation belongs to this student
+            const reservations = await Reservations.getReservationHistory(student.id);
+            const reservation = reservations.find(r => r.reservationID === input.reservationID);
+            
+            if (!reservation) {
+                throw new TRPCError({ 
+                    code: "FORBIDDEN", 
+                    message: "You don't have permission to cancel this reservation." 
+                });
+            }
+            
+            const cancellationCall = await protectedCall(async () => {
+                return await Reservations.cancelReservation(input.reservationID);
+            });
+            
+            if (!cancellationCall.success) {
+                throw new TRPCError({ 
+                    code: "INTERNAL_SERVER_ERROR", 
+                    message: cancellationCall.error?.message || "Failed to cancel reservation." 
+                });
+            }
+            
+            return cancellationCall.result;
+        })
+});
