@@ -25,11 +25,54 @@ export default function ApplicationForm() {
       console.error(err);
     });
   }, []);
+
   /**
    * Application submission handler.
    * @param e The form submission event.
    */
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+    if (!selectedRoomId) {
+      setError("Select a Room.");
+      return;
+    }
+    if (!startDate || !endDate) {
+      setError("Select Start and End Dates.");
+      return;
+    }
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+    if (endDateObj <= startDateObj) {
+      setError("End date must be after start date.");
+      return;
+    }
+    try {
+      // application reset
+      await api.application.submit.mutate({
+        roomId: selectedRoomId,
+        startDate: startDateObj,
+        endDate: endDateObj,
+        comments: comments
+      });
+      setSuccess(true);
+      setSelectedRoomId("");
+      setStartDate("");
+      setEndDate("");
+      setComments("");
+      // directs user to view applications page
+      setTimeout(() => {
+        navigate("/applications");
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || "Failed to submit application.");
+      console.error(err);
+    }
+  };
 
-  }
+  return (
+    <div>
+    </div>
+  );
 }
