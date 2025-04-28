@@ -117,4 +117,25 @@ export const authProcedures = router({
         return createAdminCall.result;
     }),
     
-})
+    /**
+     * Get current user information - useful for client-side features that need user ID
+     */
+    getCurrentUser: authenticatedProcedure.query(async (opts) => {
+        const { ctx } = opts;
+        
+        if (!ctx.user) {
+            throw new TRPCError({ code: "UNAUTHORIZED", message: "Not logged in" });
+        }
+        
+        // Determine if user is admin or student
+        const isAdmin = ctx.user instanceof Admin;
+        
+        return {
+            id: ctx.user.id,
+            username: ctx.user.username,
+            firstname: ctx.user.firstname,
+            lastname: ctx.user.lastname,
+            type: isAdmin ? 'admin' : 'student'
+        };
+    }),
+    })
