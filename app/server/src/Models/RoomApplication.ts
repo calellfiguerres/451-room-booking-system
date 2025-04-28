@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import db from "./database";
 import { response } from "express";
+import { string } from "zod";
 
 /**
  * Database model for room applications.
@@ -48,7 +49,7 @@ export class RoomApplication {
 
   /**
    * Retrieves a room application by its ID.
-   * @param id 
+   * @param id Application ID.
    */
   public static async getAppById(id: string) {
     const response = await db.connection.one("SELECT * FROM room_application WHERE id = $1", [id]);
@@ -169,8 +170,57 @@ export class RoomApplication {
 
   /**
    * Updates an existing application in the database.
+   * @param id Application ID.
+   * @param status New status of the application (pending, approved, rejected).
+   * @param adminId Admin ID.
+   * @returns The updated application.
    */
-  public static async updateApp() {
-    
+  public static async updateApp(
+    id: string,
+    status: 'pending' | 'approved' | 'rejected',
+    adminId?: string
+  ): Promise<RoomApplication> {
+    const response = await db.connection.one(
+      `UPDATE room_application
+      SET status = $1
+      WHERE id = $2
+      RETURNING *`,
+      [status, id]
+    );
+    const studentId = response.student_id;
+    const notificationId = randomUUID();
+    const message = `Application ${status}.`;
+    await db.connection.none(
+      `INSERT INTO notifications (id, studentid, content)
+      VALUES ($1, $2, $3)`,
+      [notificationId, studentId, message]
+    );
+    if (status === 'approved') {
+      const requestId = randomUUID();
+      await db.connection.none(
+        `INSERT INTO roomrequest (requestid, studentid, roomid, opendate, closedate)
+        VALUES ($1, $2, $3, $4, $5)`,
+        [requestId, response.student_id, response.room_id, response.start_date, response.end_date]
+      );
+      // If an admin ID is provided, insert into adminroomrequestmanagement
+      if (adminId) {
+        const managementId = randomUUID();
+        await db.connection.none(
+          `INSERT INTO adminroomrequestmanagement (managementid, adminid, requestid)
+          VALUES ($1, $2, $3)`,
+          [managementId, adminId, requestId]
+        );
+      }
+    }
+    return new RoomApplication(
+      response.id,
+      response.student_id,
+      response.room_id,
+      new Date(response.request_date),
+      new Date(response.start_date),
+      new Date(response.end_date),
+      response.status,
+      response.comments
+    );
   }
 }
