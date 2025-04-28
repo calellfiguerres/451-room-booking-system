@@ -76,11 +76,11 @@ CREATE TABLE if not exists AdminRoomRequestManagement (
 
 CREATE TABLE if not exists RoomApplication (
     id VARCHAR(255) PRIMARY KEY,
-    student_id VARCHAR(255) REFERENCES Student(ID),
-    room_id VARCHAR(255) REFERENCES Room(ID),
+    studentid VARCHAR(255) REFERENCES Student(ID),
+    roomid VARCHAR(255) REFERENCES Room(ID),
     request_date DATE NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    startdate DATE NOT NULL,
+    enddate DATE NOT NULL,
     status VARCHAR(20 NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     comments TEXT
 );

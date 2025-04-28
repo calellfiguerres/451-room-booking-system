@@ -34,11 +34,11 @@ export class RoomApplication {
     const response = await db.connection.any("SELECT * FROM RoomApplication");
     const result = response.map((r) => new RoomApplication(
       r.id,
-      r.student_id,
-      r.room_id,
-      new Date(r.request_date),
-      new Date(r.start_date),
-      new Date(r.end_date),
+      r.studentid,
+      r.roomid,
+      new Date(r.requestdate),
+      new Date(r.startdate),
+      new Date(r.enddate),
       r.status,
       r.comments
     ));
@@ -53,11 +53,11 @@ export class RoomApplication {
     const response = await db.connection.one("SELECT * FROM RoomApplication WHERE id = $1", [id]);
     const result = new RoomApplication(
       response.id,
-      response.student_id,
-      response.room_id,
-      new Date(response.request_date),
-      new Date(response.start_date),
-      new Date(response.end_date),
+      response.studentid,
+      response.roomid,
+      new Date(response.requestdate),
+      new Date(response.startdate),
+      new Date(response.enddate),
       response.status,
       response.comments
     );
@@ -72,20 +72,20 @@ export class RoomApplication {
     const response = await db.connection.any(
       "SELECT ra.*, r.name as room_name, r.location as room_location " +
       "FROM RoomApplication ra " +
-      "JOIN room r ON ra.room_id = r.id " +
-      "WHERE ra.student_id = $1 " +
-      "ORDER BY ra.request_date DESC",
+      "JOIN room r ON ra.roomid = r.id " +
+      "WHERE ra.studentid = $1 " +
+      "ORDER BY ra.requestdate DESC",
       [studentId] 
     );
     const result = response.map((r) => ({
       id: r.id,
-      studentId: r.student_id,
-      roomId: r.room_id,
-      roomName: r.room_name,
-      roomLocation: r.room_location,
-      requestDate: new Date(r.request_date),
-      startDate: new Date(r.start_date),
-      endDate: new Date(r.end_date),
+      studentId: r.studentid,
+      roomId: r.roomid,
+      roomName: r.roomname,
+      roomLocation: r.roomlocation,
+      requestDate: new Date(r.requestdate),
+      startDate: new Date(r.startdate),
+      endDate: new Date(r.enddate),
       status: r.status,
       comments: r.comments
     }));
@@ -113,56 +113,61 @@ export class RoomApplication {
   ): Promise<RoomApplication> {
     const id = randomUUID();
     const date = new Date();
-    if (arg instanceof RoomApplication) {
-      const app = arg;
-      // insert application into the database
-      await db.connection.none(
-        `INSERT INTO RoomApplication (id, student_id, room_id, request_date, start_date, end_date, status, comments)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [id, app.studentId, app.roomId, date, app.startDate, app.endDate, 'pending', app.comments]
-      );
-      // send notification to the student
-      const notificationId = randomUUID();
-      await db.connection.none(
-        `INSERT INTO Notifications (id, student_id, content)
-        VALUES ($1, $2, $3)`,
-        [notificationId, app.studentId, `Application Submitted!`]
-      );
-      return new RoomApplication(
-        id,
-        app.studentId,
-        app.roomId,
-        date,
-        app.startDate,
-        app.endDate,
-        'pending',
-        app.comments
-      );
-    } else if (arg && roomId && startDate && endDate) {
-      const studentId = arg;
-      await db.connection.none(
-        `INSERT INTO RoomApplication (id, student_id, room_id, request_date, start_date, end_date, status, comments)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [id, studentId, roomId, date, startDate, endDate, 'pending', comments || '']
-      );
-      const notificationId = randomUUID();
-      await db.connection.none(
-        `INSERT INTO Notifications (id, student_id, content)
-        VALUES ($1, $2, $3)`,
-        [notificationId, studentId, `Application Submitted!`]
-      );
-      return new RoomApplication(
-        id,
-        studentId,
-        roomId,
-        date,
-        startDate,
-        endDate,
-        'pending',
-        comments || ''
-      );
-    } else {
-      throw new Error("Invalid arguments provided to addApp");
+    try {
+      if (arg instanceof RoomApplication) {
+        const app = arg;
+        // insert application into the database
+        await db.connection.none(
+          `INSERT INTO RoomApplication (id, studentid, roomid, requestdate, startdate, enddate, status, comments)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [id, app.studentId, app.roomId, date, app.startDate, app.endDate, 'pending', app.comments]
+        );
+        // send notification to the student
+        const notificationId = randomUUID();
+        await db.connection.none(
+          `INSERT INTO Notifications (id, studentid, content)
+          VALUES ($1, $2, $3)`,
+          [notificationId, app.studentId, `Application Submitted!`]
+        );
+        return new RoomApplication(
+          id,
+          app.studentId,
+          app.roomId,
+          date,
+          app.startDate,
+          app.endDate,
+          'pending',
+          app.comments
+        );
+      } else if (arg && roomId && startDate && endDate) {
+        const studentId = arg;
+        await db.connection.none(
+          `INSERT INTO RoomApplication (id, studentid, roomid, requestdate, startdate, enddate, status, comments)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [id, studentId, roomId, date, startDate, endDate, 'pending', comments || '']
+        );
+        const notificationId = randomUUID();
+        await db.connection.none(
+          `INSERT INTO Notifications (id, studentid, content)
+          VALUES ($1, $2, $3)`,
+          [notificationId, studentId, `Application Submitted!`]
+        );
+        return new RoomApplication(
+          id,
+          studentId,
+          roomId,
+          date,
+          startDate,
+          endDate,
+          'pending',
+          comments || ''
+        );
+      } else {
+        throw new Error("Invalid arguments provided to addApp");
+      }
+    } catch (error) {
+        console.error("Error adding application:", error);
+        throw new Error("Failed to add application");
     }
   }
 
@@ -212,11 +217,11 @@ export class RoomApplication {
     }
     return new RoomApplication(
       response.id,
-      response.student_id,
-      response.room_id,
-      new Date(response.request_date),
-      new Date(response.start_date),
-      new Date(response.end_date),
+      response.studentid,
+      response.roomid,
+      new Date(response.requestdate),
+      new Date(response.startdate),
+      new Date(response.enddate),
       response.status,
       response.comments
     );
