@@ -124,7 +124,7 @@ export class RoomApplication {
       // send notification to the student
       const notificationId = randomUUID();
       await db.connection.none(
-        `INSERT INTO notifications (id, student_id, content)
+        `INSERT INTO Notifications (id, student_id, content)
         VALUES ($1, $2, $3)`,
         [notificationId, app.studentId, `Application Submitted!`]
       );
@@ -147,7 +147,7 @@ export class RoomApplication {
       );
       const notificationId = randomUUID();
       await db.connection.none(
-        `INSERT INTO notifications (id, student_id, content)
+        `INSERT INTO Notifications (id, student_id, content)
         VALUES ($1, $2, $3)`,
         [notificationId, studentId, `Application Submitted!`]
       );
@@ -189,14 +189,14 @@ export class RoomApplication {
     const notificationId = randomUUID();
     const message = `Application ${status}.`;
     await db.connection.none(
-      `INSERT INTO notifications (id, studentid, content)
+      `INSERT INTO Notifications (id, studentid, content)
       VALUES ($1, $2, $3)`,
       [notificationId, studentId, message]
     );
     if (status === 'approved') {
       const requestId = randomUUID();
       await db.connection.none(
-        `INSERT INTO roomrequest (requestid, studentid, roomid, opendate, closedate)
+        `INSERT INTO RoomRequest (requestid, studentid, roomid, opendate, closedate)
         VALUES ($1, $2, $3, $4, $5)`,
         [requestId, response.student_id, response.room_id, response.start_date, response.end_date]
       );
@@ -204,7 +204,7 @@ export class RoomApplication {
       if (adminId) {
         const managementId = randomUUID();
         await db.connection.none(
-          `INSERT INTO adminroomrequestmanagement (managementid, adminid, requestid)
+          `INSERT INTO AdminRoomrequestManagement (managementid, adminid, requestid)
           VALUES ($1, $2, $3)`,
           [managementId, adminId, requestId]
         );
