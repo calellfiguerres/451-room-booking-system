@@ -6,84 +6,171 @@ import { response } from "express";
  * Database model for room applications.
  */
 export class RoomApplication {
-    /**
-     * Constructor for table attributes.
-     * @param id Application ID.
-     * @param studentId Student ID.
-     * @param roomId Dorm room ID.
-     * @param requestDate Date the application was made.
-     * @param startDate Date the lease starts.
-     * @param endDate Date the lease ends.
-     * @param status Status of the application (pending, approved, rejected).
-     * @param comments Comments from the student or admin.
-     */
-    constructor(
-        public id: string,
-        public studentId: string,
-        public roomId: string,
-        public requestDate: Date,
-        public startDate: Date,
-        public endDate: Date,
-        public status: 'pending' | 'approved' | 'rejected',
-        public comments: string
-    ) {}
+  /**
+   * Constructor for table attributes.
+   * @param id Application ID.
+   * @param studentId Student ID.
+   * @param roomId Dorm room ID.
+   * @param requestDate Date the application was made.
+   * @param startDate Date the lease starts.
+   * @param endDate Date the lease ends.
+   * @param status Status of the application (pending, approved, rejected).
+   * @param comments Comments from the student or admin.
+   */
+  constructor(
+    public id: string,
+    public studentId: string,
+    public roomId: string,
+    public requestDate: Date,
+    public startDate: Date,
+    public endDate: Date,
+    public status: 'pending' | 'approved' | 'rejected',
+    public comments: string
+  ) {}
 
-    /**
-     * Retrieves all room applications from the database.
-     */
-    public static async getAllApps() {
-        const response = await db.connection.any("SELECT * FROM room_application");
-        const result = response.map((r) => new RoomApplication(
-            r.id,
-            r.student_id,
-            r.room_id,
-            new Date(r.request_date),
-            new Date(r.start_date),
-            new Date(r.end_date),
-            r.status,
-            r.comments
-        ));
-        return result;
+  /**
+   * Retrieves all room applications from the database.
+   */
+  public static async getAllApps() {
+    const response = await db.connection.any("SELECT * FROM room_application");
+    const result = response.map((r) => new RoomApplication(
+      r.id,
+      r.student_id,
+      r.room_id,
+      new Date(r.request_date),
+      new Date(r.start_date),
+      new Date(r.end_date),
+      r.status,
+      r.comments
+    ));
+      return result;
+  }
+
+  /**
+   * Retrieves a room application by its ID.
+   * @param id 
+   */
+  public static async getAppById(id: string) {
+    const response = await db.connection.one("SELECT * FROM room_application WHERE id = $1", [id]);
+    const result = new RoomApplication(
+      response.id,
+      response.student_id,
+      response.room_id,
+      new Date(response.request_date),
+      new Date(response.start_date),
+      new Date(response.end_date),
+      response.status,
+      response.comments
+    );
+      return result;
+  }
+
+  /**
+   * Retrieves all applications for a specific student.
+   * @param studentId 
+   */
+  public static async getAppsByStudentId(studentId: string) {
+    const response = await db.connection.any(
+      "SELECT ra.*, r.name as room_name, r.location as room_location " +
+      "FROM room_application ra " +
+      "JOIN room r ON ra.room_id = r.id " +
+      "WHERE ra.student_id = $1 " +
+      "ORDER BY ra.request_date DESC",
+      [studentId] 
+    );
+    const result = response.map((r) => ({
+      id: r.id,
+      studentId: r.student_id,
+      roomId: r.room_id,
+      roomName: r.room_name,
+      roomLocation: r.room_location,
+      requestDate: new Date(r.request_date),
+      startDate: new Date(r.start_date),
+      endDate: new Date(r.end_date),
+      status: r.status,
+      comments: r.comments
+    }));
+    return result;
+  }
+
+  /**
+   * Adds a new application to the database.
+   * @param application Application to be submitted.
+   */
+  public static async addApp(application: RoomApplication): Promise<RoomApplication>;
+  public static async addApp(
+    studentId: string,
+    roomId: string,
+    startDate: Date,
+    endDate: Date,
+    comments: string
+  ): Promise<RoomApplication>;
+  public static async addApp(
+    arg: RoomApplication | string,
+    roomId?: string,
+    startDate?: Date,
+    endDate?: Date,
+    comments?: string
+  ): Promise<RoomApplication> {
+    const id = randomUUID();
+    const date = new Date();
+    if (arg instanceof RoomApplication) {
+      const app = arg;
+      // insert application into the database
+      await db.connection.none(
+        `INSERT INTO room_application (id, student_id, room_id, request_date, start_date, end_date, status, comments)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [id, app.studentId, app.roomId, date, app.startDate, app.endDate, 'pending', app.comments]
+      );
+      // send notification to the student
+      const notificationId = randomUUID();
+      await db.connection.none(
+        `INSERT INTO notifications (id, student_id, content)
+        VALUES ($1, $2, $3)`,
+        [notificationId, app.studentId, `Application Submitted!`]
+      );
+      return new RoomApplication(
+        id,
+        app.studentId,
+        app.roomId,
+        date,
+        app.startDate,
+        app.endDate,
+        'pending',
+        app.comments
+      );
+    } else if (arg && roomId && startDate && endDate) {
+      const studentId = arg;
+      await db.connection.none(
+        `INSERT INTO room_application (id, student_id, room_id, request_date, start_date, end_date, status, comments)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [id, studentId, roomId, date, startDate, endDate, 'pending', comments || '']
+      );
+      const notificationId = randomUUID();
+      await db.connection.none(
+        `INSERT INTO notifications (id, student_id, content)
+        VALUES ($1, $2, $3)`,
+        [notificationId, studentId, `Application Submitted!`]
+      );
+      return new RoomApplication(
+        id,
+        studentId,
+        roomId,
+        date,
+        startDate,
+        endDate,
+        'pending',
+        comments || ''
+      );
+    } else {
+      throw new Error("Invalid arguments provided to addApp");
     }
+  }
 
-    /**
-     * Retrieves a room application by its ID.
-     * @param id 
-     */
-    public static async getAppById(id: string) {
-        const response = await db.connection.one("SELECT * FROM room_application WHERE id = $1", [id]);
-        const result = new RoomApplication(
-            response.id,
-            response.student_id,
-            response.room_id,
-            new Date(response.request_date),
-            new Date(response.start_date),
-            new Date(response.end_date),
-            response.status,
-            response.comments
-        );
-        return result;
-    }
-
-    /**
-     * Retrieves all applications for a specific student.
-     * @param studentId 
-     */
-    public static async getAppsByStudentId(studentId: string) {
-
-    }
-
-    /**
-     * Adds a new application to the database.
-     */
-    public static async addApp() {
-
-    }
-
-    /**
-     * Updates an existing application in the database.
-     */
-    public static async updateApp() {
-
-    }
+  /**
+   * Updates an existing application in the database.
+   */
+  public static async updateApp() {
+    
+  }
 }
