@@ -1,4 +1,4 @@
-# Sprint 3 Report (April 5 2925 to Apr 27 2025)
+# Sprint 3 Report (April 5 2025 to Apr 27 2025)
 
 ## YouTube link of Sprint * Video (Make this video unlisted)
 
