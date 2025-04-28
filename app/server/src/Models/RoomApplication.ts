@@ -32,7 +32,18 @@ export class RoomApplication {
      * Retrieves all room applications from the database.
      */
     public static async getAllApps() {
-
+        const response = await db.connection.any("SELECT * FROM room_application");
+        const result = response.map((r) => new RoomApplication(
+            r.id,
+            r.student_id,
+            r.room_id,
+            new Date(r.request_date),
+            new Date(r.start_date),
+            new Date(r.end_date),
+            r.status,
+            r.comments
+        ));
+        return result;
     }
 
     /**
